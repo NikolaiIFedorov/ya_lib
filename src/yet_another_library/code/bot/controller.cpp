@@ -1,21 +1,32 @@
 #include "controller.hpp"
 
+void Controller::triggerCallback(Event event) {
+    if (!eventCallbacksMap.contains(event))
+        return;
+
+    const auto &callbacks = eventCallbacksMap[event];
+    for (const auto &callback : callbacks)
+        callback();
+
+    eventCallbacksMap.erase(event);
+};
+
 void Controller::pollInputs() {
-    for (auto &[inputCmd, callbacks] : inputCmdCallbacksMap) {
-        if (prosButtonInputCmdMap.contains(inputCmd) &&
-            controller.get_digital(prosButtonInputCmdMap.at(inputCmd))) {
+    for (auto &[event, callbacks] : eventCallbacksMap) {
+        if (prosButtonEventMap.contains(event) &&
+            controller.get_digital(prosButtonEventMap.at(event))) {
             for (const auto &callback : callbacks)
                 callback();
         }
 
-        if (prosAnalogInputCmdMap.contains(inputCmd) &&
-            controller.get_analog(prosAnalogInputCmdMap.at(inputCmd))) {
+        if (prosAnalogEventMap.contains(event) &&
+            controller.get_analog(prosAnalogEventMap.at(event))) {
             for (const auto &callback : callbacks)
                 callback();
         }
     }
 };
 
-void Controller::attachCallbackToInput(InputCmd inputCmd, std::function<void()> callback) {
-    inputCmdCallbacksMap[inputCmd].push_back(callback);
+void Controller::attachCallbackToInput(Event event, std::function<void()> callback) {
+    eventCallbacksMap[event].push_back(callback);
 };

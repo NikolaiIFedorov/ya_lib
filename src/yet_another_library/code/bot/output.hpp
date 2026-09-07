@@ -9,19 +9,21 @@
 #include <unordered_set>
 
 class Output {
-    friend class Bot;
-
   public:
-    Output(Brain::Port port, std::function<void(Brain::Port, float)> call);
+    Output(
+        Brain::Port port,
+        std::function<void(Brain::Port, float)> call,
+        std::function<float(Brain::Port)> getState);
 
     bool operator<(const Output &compared) const {
         return port < compared.port;
     }
 
+    float getState();
+    void operator()(float arg) const;
+
   private:
     Brain::Port port;
-
-    void operator()(float arg) const;
 };
 
 class Motor : public Output {
@@ -34,6 +36,7 @@ class Motor : public Output {
     static std::unordered_set<Brain::Port> flippedMotors;
 
     static void spin(Brain::Port port, float pct);
+    static float getVoltage(Brain::Port port);
 };
 
 class Piston : public Output {
@@ -45,4 +48,5 @@ class Piston : public Output {
     static std::map<Brain::Port, pros::ADIPneumatics> pistons;
 
     static void extend(Brain::Port port, float state);
+    static float getExtended(Brain::Port port);
 };

@@ -4,12 +4,13 @@
 #include "pros/misc.hpp"
 #include <functional>
 #include <map>
+#include <vector>
 
 class Controller {
     friend class Bot;
 
   public:
-    enum class InputCmd {
+    enum class Event {
         A,
         B,
         X,
@@ -26,18 +27,40 @@ class Controller {
         Lx,
         Ry,
         Rx,
+        Auton,
+        Init,
+        Comp_Init,
+        Driver_Control,
     };
 
-    static void attachCallbackToInput(InputCmd inputCmd, std::function<void()>);
-    static float getInput(InputCmd);
+    static void attachCallbackToInput(Event event, std::function<void()>);
+    static float getInput(Event);
 
   private:
     static pros::Controller controller;
 
-    static inline const std::map<InputCmd, pros::controller_digital_e_t> prosButtonInputCmdMap;
-    static inline const std::map<InputCmd, pros::controller_analog_e_t> prosAnalogInputCmdMap;
+    static inline const std::map<Event, pros::controller_digital_e_t> prosButtonEventMap = {
+        {Event::A, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A},
+        {Event::B, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B},
+        {Event::X, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X},
+        {Event::Y, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_Y},
+        {Event::Left, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_LEFT},
+        {Event::Up, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_UP},
+        {Event::Right, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_RIGHT},
+        {Event::Down, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_DOWN},
+        {Event::Lu, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L1},
+        {Event::Ld, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_L2},
+        {Event::Ru, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1},
+        {Event::Rd, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2},
+    };
+    static inline const std::map<Event, pros::controller_analog_e_t> prosAnalogEventMap = {
+        {Event::Ly, pros::controller_analog_e_t::E_CONTROLLER_ANALOG_LEFT_Y},
+        {Event::Lx, pros::controller_analog_e_t::E_CONTROLLER_ANALOG_LEFT_X},
+        {Event::Ry, pros::controller_analog_e_t::E_CONTROLLER_ANALOG_RIGHT_Y},
+        {Event::Rx, pros::controller_analog_e_t::E_CONTROLLER_ANALOG_RIGHT_X}};
 
-    static std::map<InputCmd, std::vector<std::function<void()>>> inputCmdCallbacksMap;
+    static std::map<Event, std::vector<std::function<void()>>> eventCallbacksMap;
 
+    static void triggerCallback(Event event);
     static void pollInputs();
 };

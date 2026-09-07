@@ -2,7 +2,7 @@
 #include "pros/adi.hpp"
 #include "pros/motors.hpp"
 
-Motor::Motor(Brain::Port port, bool flipped) : Output(port, spin) {
+Motor::Motor(Brain::Port port, bool flipped) : Output(port, spin, getVoltage) {
     if (prosPortPortMap.contains(port))
         motors.insert({port, pros::Motor(prosPortPortMap.at(port))});
     else
@@ -13,16 +13,24 @@ Motor::Motor(Brain::Port port, bool flipped) : Output(port, spin) {
 }
 
 void Motor::spin(Brain::Port port, float pct) {
-    Motor::motors.at(port).move_voltage(12000 * (flippedMotors.contains(port) ? -pct : pct));
+    motors.at(port).move_voltage(12000 * (flippedMotors.contains(port) ? -pct : pct));
 };
 
-Piston::Piston(Brain::Port port, bool defState) : Output(port, extend) {
+float Motor::getVoltage(Brain::Port port) {
+    return motors.at(port).get_voltage();
+};
+
+Piston::Piston(Brain::Port port, bool defState) : Output(port, extend, getExtended) {
     if (prosPortPortMap.contains(port))
         pistons.insert({port, pros::ADIPneumatics(prosPortPortMap.at(port), defState)});
     else
         Output::~Output(); // Warn
 }
 
-void Piston::extend(Brain::Port port, float state) {
-    Piston::pistons.at(port).set_value(state);
+void Piston::extend(Brain::Port port, float extended) {
+    pistons.at(port).set_value(extended);
+};
+
+float Piston::getExtended(Brain::Port port) {
+    return pistons.at(port).is_extended();
 };
