@@ -2,6 +2,14 @@
 #include "pros/adi.hpp"
 #include "pros/motors.hpp"
 
+void Output::operator()(float arg) const {
+    _call(port, arg);
+};
+
+float Output::getState() {
+    return _getState(port);
+};
+
 Motor::Motor(Brain::Port port, bool flipped) : Output(port, spin, getVoltage) {
     if (prosPortPortMap.contains(port))
         motors.insert({port, pros::Motor(prosPortPortMap.at(port))});

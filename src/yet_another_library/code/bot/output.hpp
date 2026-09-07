@@ -24,6 +24,9 @@ class Output {
 
   private:
     Brain::Port port;
+
+    void (*_call)(Brain::Port, float);
+    float (*_getState)(Brain::Port);
 };
 
 class Motor : public Output {
