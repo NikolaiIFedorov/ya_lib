@@ -25,8 +25,8 @@ class Output {
   private:
     Brain::Port port;
 
-    void (*_call)(Brain::Port, float);
-    float (*_getState)(Brain::Port);
+    std::function<void(Brain::Port, float)> _call;
+    std::function<float(Brain::Port)> _getState;
 };
 
 class Motor : public Output {

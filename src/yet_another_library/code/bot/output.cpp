@@ -2,6 +2,12 @@
 #include "pros/adi.hpp"
 #include "pros/motors.hpp"
 
+Output::Output(
+    Brain::Port port,
+    std::function<void(Brain::Port, float)> call,
+    std::function<float(Brain::Port)> getState)
+    : port(port), _call(call), _getState(getState) {};
+
 void Output::operator()(float arg) const {
     _call(port, arg);
 };
