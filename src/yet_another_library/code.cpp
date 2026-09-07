@@ -4,10 +4,9 @@
 
 void Bot::init() {
     const auto dt = Bot::addSystem(
-        Bot::System<1>{
+        Bot::System<float>{
             {{{Motor{Brain::Port::_1}},
-              {{{Controller::InputCmd::A, []() { return 1; }}},
-               [](std::array<float, 1> macroArgs) { return macroArgs[0]; }}}}});
+              {{{Controller::InputCmd::A, []() { return 1; }}}, [](float arg) { return 1; }}}}});
 
-    dt({1});
+    dt(1);
 }
