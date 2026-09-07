@@ -1,3 +1,5 @@
+#pragma once
+
 class Brain {
   public:
     enum class Port {
