@@ -7,10 +7,11 @@
 
 class Log {
   public:
-    static std::function<void()> getAuton(std::vector<std::function<void()>> autons);
+    static std::function<void()>
+    getAuton(std::vector<std::function<void()>> autons); // Complete getAuton
 
     template <typename Function, typename Re = std::invoke_result_t<Function>>
-    Re static _Trace(std::source_location loc, Function function) {
+    Re static _Trace(std::source_location loc, Function function) { // Add brain logging
         logFunctionStatus(loc, false);
 
         if constexpr (std::is_void_v<Re>) {
@@ -25,6 +26,9 @@ class Log {
     }
 
   private:
+    static inline const std::string DARK_GRAY = "\033[90m";
+    static inline const std::string RESET = "\033[0m";
+
     static uint32_t logCount;
 
     static std::string getLabel(std::string str);

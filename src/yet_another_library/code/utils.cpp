@@ -2,7 +2,7 @@
 #include <iostream>
 
 std::string Log::getLabel(std::string str) {
-    return "[" + str + "]";
+    return DARK_GRAY + "[" + str + "]" + RESET;
 };
 
 std::string Log::getLabel(uint32_t num) {
