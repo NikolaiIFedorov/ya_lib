@@ -8,7 +8,7 @@ std::map<Brain::Port, pros::Motor> Motor::motors = {};
 std::map<Brain::Port, pros::adi::Pneumatics> Piston::pistons = {};
 
 Output::Output(Brain::Port port, Call call, GetState getState)
-    : port(port), _call(call), _getState(getState) {};
+    : port(port), _call(std::move(call)), _getState(std::move(getState)) {};
 
 Output::Output(Brain::Port port, bool flipped) {
     *this = Motor(port, flipped);

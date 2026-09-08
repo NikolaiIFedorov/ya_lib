@@ -5,7 +5,7 @@
 
 Bot::Equation::Equation(float val) : EquationFunction([val]() { return val; }), constant(true) {};
 
-Bot::Outputs::Outputs(Output output) : OutputVector({output}) {};
+Bot::Outputs::Outputs(Output output) : OutputVector({std::move(output)}) {};
 
 void Bot::Outputs::operator()(float arg) const {
     TRACE([arg, this]() {
@@ -36,7 +36,7 @@ void Bot::Outputs::addEvent(Controller::Event event, Equation equation) const {
     });
 };
 
-std::function<void()> Bot::getAuton() {
+Controller::Callback Bot::getAuton() {
     return TRACE([]() {
         const auto &autons = Controller::callbackFromEvent[Controller::Event::Auton];
         if (autons.size() == 1)

@@ -120,5 +120,5 @@ class Bot {
     static void _drivercontrol();
 
   private:
-    static std::function<void()> getAuton();
+    static Controller::Callback getAuton();
 };

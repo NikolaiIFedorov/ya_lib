@@ -10,6 +10,8 @@ class Controller {
     friend class Bot;
 
   public:
+    using Callback = std::function<void()>;
+
     enum class Event {
         A,
         B,
@@ -33,7 +35,7 @@ class Controller {
         Driver_Control,
     };
 
-    static void addCallback(Event event, std::function<void()> callback);
+    static void addCallback(Event event, Callback callback);
     static float getInput(Event event);
 
   private:
@@ -59,7 +61,7 @@ class Controller {
         {Event::Ry, pros::controller_analog_e_t::E_CONTROLLER_ANALOG_RIGHT_Y},
         {Event::Rx, pros::controller_analog_e_t::E_CONTROLLER_ANALOG_RIGHT_X}};
 
-    static std::map<Event, std::vector<std::function<void()>>> callbackFromEvent;
+    static std::map<Event, std::vector<Callback>> callbackFromEvent;
 
     static void triggerCallback(Event event);
     static void pollInputs();

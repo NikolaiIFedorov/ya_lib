@@ -3,7 +3,7 @@
 #include "pros/misc.h"
 
 pros::Controller Controller::controller(pros::controller_id_e_t::E_CONTROLLER_MASTER);
-std::map<Controller::Event, std::vector<std::function<void()>>> Controller::callbackFromEvent = {};
+std::map<Controller::Event, std::vector<Controller::Callback>> Controller::callbackFromEvent = {};
 
 void Controller::triggerCallback(Event event) {
     TRACE([event]() {
@@ -36,6 +36,6 @@ void Controller::pollInputs() {
     });
 };
 
-void Controller::addCallback(Event event, std::function<void()> callback) {
-    callbackFromEvent[event].push_back(callback);
+void Controller::addCallback(Event event, Callback callback) {
+    callbackFromEvent[event].push_back(std::move(callback));
 };

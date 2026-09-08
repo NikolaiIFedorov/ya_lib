@@ -1,14 +1,14 @@
 #pragma once
 
+#include "bot/controller.hpp"
 #include <cstdint>
-#include <functional>
 #include <source_location>
 #include <string>
 
 class Log {
   public:
-    static std::function<void()>
-    getAuton(std::vector<std::function<void()>> autons); // Complete getAuton
+    static Controller::Callback
+    getAuton(std::vector<Controller::Callback> autons); // Complete getAuton
 
     template <typename Function, typename Re = std::invoke_result_t<Function>>
     Re static _Trace(std::source_location loc, Function function) { // Add brain logging

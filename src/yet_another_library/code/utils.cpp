@@ -3,7 +3,7 @@
 
 uint32_t Log::logCount = 0;
 
-std::function<void()> Log::getAuton(std::vector<std::function<void()>> autons) {
+Controller::Callback Log::getAuton(std::vector<Controller::Callback> autons) {
     return []() {};
 };
 
@@ -12,7 +12,7 @@ std::string Log::getLabel(std::string str) {
 };
 
 std::string Log::getLabel(uint32_t num) {
-    return getLabel(std::to_string(num));
+    return getLabel(std::to_string(std::move(num)));
 };
 
 void Log::log(std::source_location loc, std::string msg) {
