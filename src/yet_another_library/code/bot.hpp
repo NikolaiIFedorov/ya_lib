@@ -11,6 +11,8 @@ class Bot {
     using EquationFunction = std::function<float()>;
     struct Equation : public EquationFunction {
       public:
+        using EquationFunction::EquationFunction;
+
         template <typename Function>
             requires std::is_invocable_r_v<float, Function>
         Equation(Function function) : EquationFunction(function), constant(false){};
@@ -24,11 +26,34 @@ class Bot {
       public:
         using OutputVector::OutputVector;
         Outputs(Output output);
+
+        void operator()(float arg) const {
+            const auto &thisOutputs = *this;
+            for (const auto &output : thisOutputs)
+                output(arg);
+        }
+
+        float getState() const {
+            float totalState;
+            const auto &thisOutputs = *this;
+            for (const auto &output : thisOutputs)
+                totalState += thisOutputs.getState();
+
+            return totalState / thisOutputs.size();
+        };
+
+        void addEvent(Controller::Event event, Equation equation) const {
+            const auto &thisOutputs = *this;
+            for (const auto &output : thisOutputs)
+                Controller::addCallback(event, [output, equation]() { output(equation()); });
+        };
     };
 
     template <typename... Args> using MacroFunction = std::function<float(Args...)>;
     template <typename... Args> struct Macro : public MacroFunction<Args...> {
       public:
+        using MacroFunction<Args...>::MacroFunction;
+
         template <typename Function>
             requires std::is_invocable_r_v<float, Function, Args...>
         Macro(Function function) : MacroFunction<Args...>(function), enabled(true){};
@@ -38,24 +63,34 @@ class Bot {
     };
 
     template <typename... MacroArgs>
-    using Subsystems =
-        std::map<Outputs, std::pair<std::map<Controller::Event, Equation>, Macro<MacroArgs...>>>;
-    template <typename... MacroArgs> class System : public Subsystems<MacroArgs...> {
+    using EquationsPair = std::pair<std::map<Controller::Event, Equation>, Macro<MacroArgs...>>;
+    template <typename... MacroArgs> struct Equations : public EquationsPair<MacroArgs...> {
       public:
-        using Subsystems = Bot::Subsystems<MacroArgs...>;
+        using EquationsPair<MacroArgs...>::EquationsPair;
 
-        System(Subsystems subsystems) : Subsystems(subsystems) {};
-        System(
-            Outputs outputs,
-            std::map<Controller::Event, Equation> inputs,
-            Macro<MacroArgs...> macro)
-            : System({outputs, {inputs, macro}}) {};
-        System(
-            Outputs outputs,
-            Controller::Event input,
-            Equation inputEquation,
-            Macro<MacroArgs...> macro)
-            : System(outputs, {input, inputEquation}, macro) {};
+        Equations(std::map<Controller::Event, Equation> equations)
+            : Equations({equations, Macro<MacroArgs...>()}) {};
+        Equations(std::vector<Controller::Event> events) : Equations(convertToMap(events)) {};
+        Equations(Controller::Event event) : Equations(std::vector<Controller::Event>{event}) {};
+
+        Equations(std::vector<Controller::Event> events, Macro<MacroArgs...> macro)
+            : Equations({convertToMap(events), macro}) {};
+        Equations(Macro<MacroArgs...> macro) : Equations({}, macro) {};
+
+      private:
+        std::map<Controller::Event, Equation> convertToMap(std::vector<Controller::Event> events) {
+            std::map<Controller::Event, Equation> equations;
+            for (const auto &event : events)
+                equations.insert({event, {}});
+
+            return equations;
+        };
+    };
+
+    template <typename... MacroArgs> using SystemMap = std::map<Outputs, Equations<MacroArgs...>>;
+    template <typename... MacroArgs> class System : public SystemMap<MacroArgs...> {
+      public:
+        using Subsystems = Bot::SystemMap<MacroArgs...>;
 
         void operator()(MacroArgs... macroArgs) const {
             const auto &subsystems = *this;
@@ -70,21 +105,20 @@ class Bot {
                     output(arg);
             };
         };
+
+        void addOutputs(const Outputs &outputs, const Equations<MacroArgs...> &equations) {
+            const auto &eventEquations = equations.first;
+            for (const auto &[event, equation] : eventEquations)
+                outputs.addEvent(event, equation);
+        };
     };
 
     static void init();
 
     template <typename... MacroArgs>
     static System<MacroArgs...> addSystem(System<MacroArgs...> system) {
-        for (const auto &[outputs, input] : system) {
-            const auto &eventEquations = input.first;
-            for (const auto &[event, equation] : eventEquations) {
-                for (const auto &output : outputs)
-                    Controller::attachCallbackToInput(event, [output, equation]() {
-                        output(equation());
-                    });
-            }
-        }
+        for (const auto &[outputs, equations] : system)
+            system.addOutputs(outputs, equations);
 
         return system;
     };

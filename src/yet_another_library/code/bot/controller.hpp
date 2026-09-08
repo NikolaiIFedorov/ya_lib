@@ -33,7 +33,7 @@ class Controller {
         Driver_Control,
     };
 
-    static void attachCallbackToInput(Event event, std::function<void()>);
+    static void addCallback(Event event, std::function<void()>);
     static float getInput(Event);
 
   private:

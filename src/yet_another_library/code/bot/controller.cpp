@@ -27,6 +27,6 @@ void Controller::pollInputs() {
     }
 };
 
-void Controller::attachCallbackToInput(Event event, std::function<void()> callback) {
+void Controller::addCallback(Event event, std::function<void()> callback) {
     eventCallbacksMap[event].push_back(callback);
 };

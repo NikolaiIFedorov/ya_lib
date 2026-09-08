@@ -8,19 +8,30 @@ Output::Output(
     std::function<float(Brain::Port)> getState)
     : port(port), _call(call), _getState(getState) {};
 
+Output::Output(Brain::Port port, bool flipped) {
+    if (Motor::prosPortPortMap.contains(port))
+        *this = Motor(port, flipped);
+    else
+        *this = Piston(port, flipped);
+};
+Output::Output(bool defExtended, Brain::Port port, bool flipped) {
+    if (Piston::prosPortPortMap.contains(port))
+        *this = Piston(port, defExtended, flipped);
+    else
+        *this = Motor(port, flipped);
+};
+
 void Output::operator()(float arg) const {
     _call(port, arg);
 };
 
-float Output::getState() {
+float Output::getState() const {
     return _getState(port);
 };
 
-Motor::Motor(Brain::Port port, bool flipped) : Output(port, spin, getVoltage) {
+Motor::Motor(Brain::Port port, bool flipped) : Output(port, Call(spin), GetState(getVoltage)) {
     if (prosPortPortMap.contains(port))
         motors.insert({port, pros::Motor(prosPortPortMap.at(port))});
-    else
-        Output::~Output(); // Warn
 
     if (flipped)
         flippedMotors.insert(port);
@@ -34,15 +45,17 @@ float Motor::getVoltage(Brain::Port port) {
     return motors.at(port).get_voltage();
 };
 
-Piston::Piston(Brain::Port port, bool defState) : Output(port, extend, getExtended) {
+Piston::Piston(Brain::Port port, bool defState, bool flipped)
+    : Output(port, Call(extend), GetState(getExtended)) {
     if (prosPortPortMap.contains(port))
         pistons.insert({port, pros::ADIPneumatics(prosPortPortMap.at(port), defState)});
-    else
-        Output::~Output(); // Warn
+
+    if (flipped)
+        flippedPistons.insert(port);
 }
 
 void Piston::extend(Brain::Port port, float extended) {
-    pistons.at(port).set_value(extended);
+    pistons.at(port).set_value(flippedPistons.contains(port) ? !bool(extended) : extended);
 };
 
 float Piston::getExtended(Brain::Port port) {

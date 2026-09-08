@@ -1,5 +1,6 @@
 #include "bot.hpp"
 #include "bot/controller.hpp"
+#include "pros/rtos.hpp"
 
 Bot::Equation::Equation(float val) : EquationFunction([val]() { return val; }), constant(true) {};
 
@@ -14,5 +15,8 @@ void Bot::_auton() {
 };
 
 void Bot::_drivercontrol() {
-    Controller::pollInputs();
+    while (true) {
+        Controller::pollInputs();
+        pros::delay(10);
+    }
 };
