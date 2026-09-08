@@ -44,7 +44,16 @@ class Motor : public Output {
     Motor(Brain::Port port, bool flipped = false);
 
   private:
-    static inline const std::map<Brain::Port, int8_t> prosPortFromPort;
+    static inline const std::map<Brain::Port, int8_t> prosPortFromPort = {
+        {Brain::Port::_1, 1},   {Brain::Port::_2, 2},   {Brain::Port::_3, 3},
+        {Brain::Port::_4, 4},   {Brain::Port::_5, 5},   {Brain::Port::_6, 6},
+        {Brain::Port::_7, 7},   {Brain::Port::_8, 8},   {Brain::Port::_9, 9},
+        {Brain::Port::_10, 10}, {Brain::Port::_11, 11}, {Brain::Port::_12, 12},
+        {Brain::Port::_13, 13}, {Brain::Port::_14, 14}, {Brain::Port::_15, 15},
+        {Brain::Port::_16, 16}, {Brain::Port::_17, 17}, {Brain::Port::_18, 18},
+        {Brain::Port::_19, 19}, {Brain::Port::_20, 20},
+
+    };
     static std::map<Brain::Port, pros::Motor> motors;
 
     static void spin(Brain::Port port, float pct);
@@ -58,7 +67,16 @@ class Piston : public Output {
     Piston(Brain::Port port, bool defState, bool flipped = false);
 
   private:
-    static inline const std::map<Brain::Port, uint8_t> prosPortFromPort;
+    static inline const std::map<Brain::Port, uint8_t> prosPortFromPort{
+        {Brain::Port::A, 'A'},
+        {Brain::Port::B, 'B'},
+        {Brain::Port::C, 'C'},
+        {Brain::Port::D, 'D'},
+        {Brain::Port::E, 'E'},
+        {Brain::Port::F, 'F'},
+        {Brain::Port::G, 'G'},
+        {Brain::Port::H, 'H'},
+    };
     static std::map<Brain::Port, pros::adi::Pneumatics> pistons;
 
     static void extend(Brain::Port port, float state);

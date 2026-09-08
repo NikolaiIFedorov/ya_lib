@@ -20,7 +20,7 @@ float Bot::Outputs::getState() const {
         float totalState;
         const auto &thisOutputs = *this;
         for (const auto &output : thisOutputs)
-            totalState += thisOutputs.getState();
+            totalState += output.getState();
 
         return totalState / thisOutputs.size();
     });
@@ -30,7 +30,9 @@ void Bot::Outputs::addEvent(Controller::Event event, Equation equation) const {
     TRACE([this, event, equation]() {
         const auto &thisOutputs = *this;
         for (const auto &output : thisOutputs)
-            Controller::addCallback(event, [output, equation]() { output(equation()); });
+            Controller::addCallback(event, [output, equation, event]() {
+                output(equation.constant ? equation() * Controller::getInput(event) : equation());
+            });
     });
 };
 
