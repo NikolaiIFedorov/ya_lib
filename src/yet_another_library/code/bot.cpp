@@ -1,6 +1,7 @@
 #include "bot.hpp"
 #include "bot/controller.hpp"
 #include "pros/rtos.hpp"
+#include "utils.hpp"
 
 Bot::Equation::Equation(float val) : EquationFunction([val]() { return val; }), constant(true) {};
 
@@ -27,10 +28,22 @@ void Bot::Outputs::addEvent(Controller::Event event, Equation equation) const {
         Controller::addCallback(event, [output, equation]() { output(equation()); });
 };
 
-void Bot::_compInit() {
-    Controller::triggerCallback(Controller::Event::Comp_Init);
+std::function<void()> Bot::getAuton() {
+    const auto &autons = Controller::callbackFromEvent[Controller::Event::Auton];
+    if (autons.size() == 1)
+        return autons[0];
+
+    return Log::getAuton(autons);
 };
 
+void Bot::_compInit() {
+    if (Controller::callbackFromEvent.contains(Controller::Event::Auton)) {
+        const auto &auton = getAuton();
+        Controller::callbackFromEvent[Controller::Event::Auton] = {auton};
+    };
+
+    Controller::triggerCallback(Controller::Event::Comp_Init);
+}
 void Bot::_auton() {
     Controller::triggerCallback(Controller::Event::Auton);
 };

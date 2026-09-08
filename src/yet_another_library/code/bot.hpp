@@ -106,7 +106,10 @@ class Bot {
         return system;
     };
 
-    static void _compInit(); // Add auton selection
+    static void _compInit();
     static void _auton();
     static void _drivercontrol();
+
+  private:
+    static std::function<void()> getAuton();
 };
