@@ -33,13 +33,13 @@ class Controller {
         Driver_Control,
     };
 
-    static void addCallback(Event event, std::function<void()>);
-    static float getInput(Event);
+    static void addCallback(Event event, std::function<void()> callback);
+    static float getInput(Event event);
 
   private:
     static pros::Controller controller;
 
-    static inline const std::map<Event, pros::controller_digital_e_t> prosButtonEventMap = {
+    static inline const std::map<Event, pros::controller_digital_e_t> prosButtonFromEvent = {
         {Event::A, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_A},
         {Event::B, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_B},
         {Event::X, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_X},
@@ -53,13 +53,13 @@ class Controller {
         {Event::Ru, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R1},
         {Event::Rd, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_R2},
     };
-    static inline const std::map<Event, pros::controller_analog_e_t> prosAnalogEventMap = {
+    static inline const std::map<Event, pros::controller_analog_e_t> prosAnalogFromEvent = {
         {Event::Ly, pros::controller_analog_e_t::E_CONTROLLER_ANALOG_LEFT_Y},
         {Event::Lx, pros::controller_analog_e_t::E_CONTROLLER_ANALOG_LEFT_X},
         {Event::Ry, pros::controller_analog_e_t::E_CONTROLLER_ANALOG_RIGHT_Y},
         {Event::Rx, pros::controller_analog_e_t::E_CONTROLLER_ANALOG_RIGHT_X}};
 
-    static std::map<Event, std::vector<std::function<void()>>> eventCallbacksMap;
+    static std::map<Event, std::vector<std::function<void()>>> callbackFromEvent;
 
     static void triggerCallback(Event event);
     static void pollInputs();

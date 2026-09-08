@@ -31,8 +31,10 @@ class Output {
 
     Brain::Port port;
 
-    std::function<void(Brain::Port, float)> _call;
-    std::function<float(Brain::Port)> _getState;
+    Call _call;
+    GetState _getState;
+
+    static std::unordered_set<Brain::Port> flippedOutputs;
 };
 
 class Motor : public Output {
@@ -42,9 +44,8 @@ class Motor : public Output {
     Motor(Brain::Port port, bool flipped = false);
 
   private:
-    static inline const std::map<Brain::Port, int8_t> prosPortPortMap;
+    static inline const std::map<Brain::Port, int8_t> prosPortFromPort;
     static std::map<Brain::Port, pros::Motor> motors;
-    static std::unordered_set<Brain::Port> flippedMotors;
 
     static void spin(Brain::Port port, float pct);
     static float getVoltage(Brain::Port port);
@@ -57,9 +58,8 @@ class Piston : public Output {
     Piston(Brain::Port port, bool defState, bool flipped = false);
 
   private:
-    static inline const std::map<Brain::Port, uint8_t> prosPortPortMap;
+    static inline const std::map<Brain::Port, uint8_t> prosPortFromPort;
     static std::map<Brain::Port, pros::ADIPneumatics> pistons;
-    static std::unordered_set<Brain::Port> flippedPistons;
 
     static void extend(Brain::Port port, float state);
     static float getExtended(Brain::Port port);

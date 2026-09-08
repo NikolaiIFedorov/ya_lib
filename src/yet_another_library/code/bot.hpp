@@ -25,32 +25,17 @@ class Bot {
     struct Outputs : public OutputVector {
       public:
         using OutputVector::OutputVector;
+
         Outputs(Output output);
 
-        void operator()(float arg) const {
-            const auto &thisOutputs = *this;
-            for (const auto &output : thisOutputs)
-                output(arg);
-        }
+        void operator()(float arg) const;
+        float getState() const;
 
-        float getState() const {
-            float totalState;
-            const auto &thisOutputs = *this;
-            for (const auto &output : thisOutputs)
-                totalState += thisOutputs.getState();
-
-            return totalState / thisOutputs.size();
-        };
-
-        void addEvent(Controller::Event event, Equation equation) const {
-            const auto &thisOutputs = *this;
-            for (const auto &output : thisOutputs)
-                Controller::addCallback(event, [output, equation]() { output(equation()); });
-        };
+        void addEvent(Controller::Event event, Equation equation) const;
     };
 
     template <typename... Args> using MacroFunction = std::function<float(Args...)>;
-    template <typename... Args> struct Macro : public MacroFunction<Args...> {
+    template <typename... Args> struct Macro : public MacroFunction<Args...> { // Add odom
       public:
         using MacroFunction<Args...>::MacroFunction;
 
@@ -90,8 +75,6 @@ class Bot {
     template <typename... MacroArgs> using SystemMap = std::map<Outputs, Equations<MacroArgs...>>;
     template <typename... MacroArgs> class System : public SystemMap<MacroArgs...> {
       public:
-        using Subsystems = Bot::SystemMap<MacroArgs...>;
-
         void operator()(MacroArgs... macroArgs) const {
             const auto &subsystems = *this;
             for (const auto &subsystem : subsystems) {
@@ -99,7 +82,7 @@ class Bot {
                 if (!macro.enabled)
                     continue;
 
-                const auto &arg = macro(macroArgs...);
+                const auto arg = macro(macroArgs...);
                 const auto &outputs = subsystem.first;
                 for (const auto &output : outputs)
                     output(arg);
@@ -123,7 +106,7 @@ class Bot {
         return system;
     };
 
-    static void _compInit();
+    static void _compInit(); // Add auton selection
     static void _auton();
     static void _drivercontrol();
 };

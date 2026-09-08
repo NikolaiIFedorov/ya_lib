@@ -1,6 +1,7 @@
 #include "code/bot.hpp"
 #include "code/bot/controller.hpp"
 
+// Add logging
 void Bot::init() {
     const Bot::Outputs left = {{Brain::Port::_1}, {Brain::Port::_3}};
     const Bot::Outputs right = {{Brain::Port::_9}, {Brain::Port::_10}};
