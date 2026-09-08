@@ -8,49 +8,61 @@ Bot::Equation::Equation(float val) : EquationFunction([val]() { return val; }), 
 Bot::Outputs::Outputs(Output output) : OutputVector({output}) {};
 
 void Bot::Outputs::operator()(float arg) const {
-    const auto &thisOutputs = *this;
-    for (const auto &output : thisOutputs)
-        output(arg);
+    TRACE([arg, this]() {
+        const auto &thisOutputs = *this;
+        for (const auto &output : thisOutputs)
+            output(arg);
+    });
 }
 
 float Bot::Outputs::getState() const {
-    float totalState;
-    const auto &thisOutputs = *this;
-    for (const auto &output : thisOutputs)
-        totalState += thisOutputs.getState();
+    return TRACE([this]() {
+        float totalState;
+        const auto &thisOutputs = *this;
+        for (const auto &output : thisOutputs)
+            totalState += thisOutputs.getState();
 
-    return totalState / thisOutputs.size();
+        return totalState / thisOutputs.size();
+    });
 };
 
 void Bot::Outputs::addEvent(Controller::Event event, Equation equation) const {
-    const auto &thisOutputs = *this;
-    for (const auto &output : thisOutputs)
-        Controller::addCallback(event, [output, equation]() { output(equation()); });
+    TRACE([this, event, equation]() {
+        const auto &thisOutputs = *this;
+        for (const auto &output : thisOutputs)
+            Controller::addCallback(event, [output, equation]() { output(equation()); });
+    });
 };
 
 std::function<void()> Bot::getAuton() {
-    const auto &autons = Controller::callbackFromEvent[Controller::Event::Auton];
-    if (autons.size() == 1)
-        return autons[0];
+    return TRACE([]() {
+        const auto &autons = Controller::callbackFromEvent[Controller::Event::Auton];
+        if (autons.size() == 1)
+            return autons[0];
 
-    return Log::getAuton(autons);
+        return Log::getAuton(autons);
+    });
 };
 
 void Bot::_compInit() {
-    if (Controller::callbackFromEvent.contains(Controller::Event::Auton)) {
-        const auto &auton = getAuton();
-        Controller::callbackFromEvent[Controller::Event::Auton] = {auton};
-    };
+    TRACE([]() {
+        if (Controller::callbackFromEvent.contains(Controller::Event::Auton)) {
+            const auto &auton = getAuton();
+            Controller::callbackFromEvent[Controller::Event::Auton] = {auton};
+        };
 
-    Controller::triggerCallback(Controller::Event::Comp_Init);
+        Controller::triggerCallback(Controller::Event::Comp_Init);
+    });
 }
 void Bot::_auton() {
     Controller::triggerCallback(Controller::Event::Auton);
 };
 
 void Bot::_drivercontrol() {
-    while (true) {
-        Controller::pollInputs();
-        pros::delay(10);
-    }
+    TRACE([]() {
+        while (true) {
+            Controller::pollInputs();
+            pros::delay(10);
+        }
+    });
 };

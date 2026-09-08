@@ -1,6 +1,5 @@
 #include "output.hpp"
-#include "pros/adi.hpp"
-#include "pros/motors.hpp"
+#include "../utils.hpp"
 
 Output::Output(Brain::Port port, Call call, GetState getState)
     : port(port), _call(call), _getState(getState) {};
@@ -21,11 +20,13 @@ float Output::getState() const {
 };
 
 Motor::Motor(Brain::Port port, bool flipped) : Output(port, Call(spin), GetState(getVoltage)) {
-    if (prosPortFromPort.contains(port))
-        motors.insert({port, pros::Motor(prosPortFromPort.at(port))});
+    TRACE([port, flipped]() {
+        if (prosPortFromPort.contains(port))
+            motors.insert({port, pros::Motor(prosPortFromPort.at(port))});
 
-    if (flipped)
-        flippedOutputs.insert(port);
+        if (flipped)
+            flippedOutputs.insert(port);
+    });
 }
 
 // Add pid
@@ -39,11 +40,13 @@ float Motor::getVoltage(Brain::Port port) {
 
 Piston::Piston(Brain::Port port, bool defState, bool flipped)
     : Output(port, Call(extend), GetState(getExtended)) {
-    if (prosPortFromPort.contains(port))
-        pistons.insert({port, pros::ADIPneumatics(prosPortFromPort.at(port), defState)});
+    TRACE([port, flipped, defState]() {
+        if (prosPortFromPort.contains(port))
+            pistons.insert({port, pros::ADIPneumatics(prosPortFromPort.at(port), defState)});
 
-    if (flipped)
-        flippedOutputs.insert(port);
+        if (flipped)
+            flippedOutputs.insert(port);
+    });
 }
 
 void Piston::extend(Brain::Port port, float extended) {

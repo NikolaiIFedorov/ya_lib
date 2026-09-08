@@ -2,6 +2,7 @@
 
 #include "bot/controller.hpp"
 #include "bot/output.hpp"
+#include "utils.hpp"
 #include <functional>
 #include <map>
 #include <vector>
@@ -64,11 +65,13 @@ class Bot {
 
       private:
         std::map<Controller::Event, Equation> convertToMap(std::vector<Controller::Event> events) {
-            std::map<Controller::Event, Equation> equations;
-            for (const auto &event : events)
-                equations.insert({event, {}});
+            return TRACE([events]() {
+                std::map<Controller::Event, Equation> equations;
+                for (const auto &event : events)
+                    equations.insert({event, {}});
 
-            return equations;
+                return equations;
+            });
         };
     };
 
@@ -76,23 +79,27 @@ class Bot {
     template <typename... MacroArgs> class System : public SystemMap<MacroArgs...> {
       public:
         void operator()(MacroArgs... macroArgs) const {
-            const auto &subsystems = *this;
-            for (const auto &subsystem : subsystems) {
-                const auto &macro = subsystem.second.second;
-                if (!macro.enabled)
-                    continue;
+            TRACE([this, macroArgs...]() {
+                const auto &subsystems = *this;
+                for (const auto &subsystem : subsystems) {
+                    const auto &macro = subsystem.second.second;
+                    if (!macro.enabled)
+                        continue;
 
-                const auto arg = macro(macroArgs...);
-                const auto &outputs = subsystem.first;
-                for (const auto &output : outputs)
-                    output(arg);
-            };
+                    const auto arg = macro(macroArgs...);
+                    const auto &outputs = subsystem.first;
+                    for (const auto &output : outputs)
+                        output(arg);
+                };
+            });
         };
 
         void addOutputs(const Outputs &outputs, const Equations<MacroArgs...> &equations) {
-            const auto &eventEquations = equations.first;
-            for (const auto &[event, equation] : eventEquations)
-                outputs.addEvent(event, equation);
+            TRACE([equations, outputs]() {
+                const auto &eventEquations = equations.first;
+                for (const auto &[event, equation] : eventEquations)
+                    outputs.addEvent(event, equation);
+            });
         };
     };
 
@@ -100,10 +107,12 @@ class Bot {
 
     template <typename... MacroArgs>
     static System<MacroArgs...> addSystem(System<MacroArgs...> system) {
-        for (const auto &[outputs, equations] : system)
-            system.addOutputs(outputs, equations);
+        return TRACE([system]() {
+            for (const auto &[outputs, equations] : system)
+                system.addOutputs(outputs, equations);
 
-        return system;
+            return system;
+        });
     };
 
     static void _compInit();
