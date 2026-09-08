@@ -1,5 +1,9 @@
 #include "controller.hpp"
 #include "../utils.hpp"
+#include "pros/misc.h"
+
+pros::Controller Controller::controller(pros::controller_id_e_t::E_CONTROLLER_MASTER);
+std::map<Controller::Event, std::vector<std::function<void()>>> Controller::callbackFromEvent = {};
 
 void Controller::triggerCallback(Event event) {
     TRACE([event]() {

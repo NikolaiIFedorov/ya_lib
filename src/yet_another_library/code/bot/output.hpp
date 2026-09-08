@@ -59,7 +59,7 @@ class Piston : public Output {
 
   private:
     static inline const std::map<Brain::Port, uint8_t> prosPortFromPort;
-    static std::map<Brain::Port, pros::ADIPneumatics> pistons;
+    static std::map<Brain::Port, pros::adi::Pneumatics> pistons;
 
     static void extend(Brain::Port port, float state);
     static float getExtended(Brain::Port port);

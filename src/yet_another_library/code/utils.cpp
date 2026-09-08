@@ -1,6 +1,12 @@
 #include "utils.hpp"
 #include <iostream>
 
+uint32_t Log::logCount = 0;
+
+std::function<void()> Log::getAuton(std::vector<std::function<void()>> autons) {
+    return []() {};
+};
+
 std::string Log::getLabel(std::string str) {
     return DARK_GRAY + "[" + str + "]" + RESET;
 };

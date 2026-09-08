@@ -1,5 +1,11 @@
 #include "output.hpp"
 #include "../utils.hpp"
+#include "pros/adi.hpp"
+#include <unordered_set>
+
+std::unordered_set<Brain::Port> Output::flippedOutputs = {};
+std::map<Brain::Port, pros::Motor> Motor::motors = {};
+std::map<Brain::Port, pros::adi::Pneumatics> Piston::pistons = {};
 
 Output::Output(Brain::Port port, Call call, GetState getState)
     : port(port), _call(call), _getState(getState) {};
@@ -42,7 +48,7 @@ Piston::Piston(Brain::Port port, bool defState, bool flipped)
     : Output(port, Call(extend), GetState(getExtended)) {
     TRACE([port, flipped, defState]() {
         if (prosPortFromPort.contains(port))
-            pistons.insert({port, pros::ADIPneumatics(prosPortFromPort.at(port), defState)});
+            pistons.insert({port, pros::adi::Pneumatics(prosPortFromPort.at(port), defState)});
 
         if (flipped)
             flippedOutputs.insert(port);

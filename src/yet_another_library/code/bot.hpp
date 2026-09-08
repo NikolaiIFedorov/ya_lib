@@ -94,7 +94,7 @@ class Bot {
             });
         };
 
-        void addOutputs(const Outputs &outputs, const Equations<MacroArgs...> &equations) {
+        void addOutputs(const Outputs &outputs, const Equations<MacroArgs...> &equations) const {
             TRACE([equations, outputs]() {
                 const auto &eventEquations = equations.first;
                 for (const auto &[event, equation] : eventEquations)
