@@ -2,6 +2,11 @@
 #include "yet_another_library/code/bot.hpp"
 
 void initialize() {
+    Log(
+        {Log::Section{Log::Kind::Error},
+         Log::Section{Log::Kind::Warn},
+         Log::Section{Log::Kind::Trace, true},
+         Log::Section{Log::Kind::Status, true}});
     Bot::init();
 }
 
