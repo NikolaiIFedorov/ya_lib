@@ -6,7 +6,7 @@
 #include <source_location>
 #include <string>
 
-class Log { // Make configurable
+class Log { // TODO: Make configurable
   public:
     enum class Kind {
         Error,
@@ -35,6 +35,8 @@ class Log { // Make configurable
         pros::Color color;
         bool logLevel;
 
+        static uint8_t monoLineCount;
+
         pros::Color getColor(Kind kind);
         bool getLogLevel(Kind kind);
     };
@@ -42,10 +44,11 @@ class Log { // Make configurable
     Log(std::array<Section, 4> sections);
 
     static Controller::Callback
-    getAuton(std::vector<Controller::Callback> autons); // Complete getAuton
+    getAuton(std::vector<Controller::Callback> autons); // TODO: Complete getAuton
+    static void createAuton();
 
     template <typename Function, typename Re = std::invoke_result_t<Function>>
-    Re static _Trace(std::source_location loc, Function function) { // Add brain logging
+    Re static _Trace(std::source_location loc, Function function) { // TODO: Add brain logging
         logFunctionStatus(loc, false);
 
         if constexpr (std::is_void_v<Re>) {

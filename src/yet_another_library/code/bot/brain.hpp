@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+#include <string>
 class Brain {
   public:
     enum class Port {
@@ -32,4 +34,10 @@ class Brain {
         _19,
         _20
     };
+
+    void log(size_t line, std::string msg);
+    size_t getLineCapacity();
+
+  private:
+    std::array<std::string, 12> lines;
 };

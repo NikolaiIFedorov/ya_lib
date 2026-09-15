@@ -9,6 +9,8 @@
 #include <unordered_set>
 
 class Output {
+    friend class Bot;
+
     friend class Motor;
     friend class Piston;
 
@@ -16,7 +18,7 @@ class Output {
     using Call = std::function<void(Brain::Port, float)>;
     using GetState = std::function<float(Brain::Port)>;
 
-    Output(Brain::Port, bool flipped = false);
+    Output(Brain::Port port, bool flipped = false);
     Output(bool initExtended, Brain::Port, bool flipped = false);
 
     bool operator<(const Output &compared) const {
@@ -64,7 +66,7 @@ class Piston : public Output {
     friend class Output;
 
   public:
-    Piston(Brain::Port port, bool defState, bool flipped = false);
+    Piston(Brain::Port port, bool defExtended, bool flipped = false);
 
   private:
     static inline const std::map<Brain::Port, uint8_t> prosPortFromPort{
@@ -79,6 +81,7 @@ class Piston : public Output {
     };
     static std::map<Brain::Port, pros::adi::Pneumatics> pistons;
 
-    static void extend(Brain::Port port, float state);
+    static void setExtended(Brain::Port port, float extended);
+
     static float getExtended(Brain::Port port);
 };

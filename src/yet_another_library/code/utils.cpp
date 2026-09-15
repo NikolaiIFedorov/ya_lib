@@ -1,5 +1,5 @@
-// Improve code quality
-// Complete display log
+// TODO: Improve code quality
+// TODO: Complete display log
 
 #include "utils.hpp"
 #include <iostream>
@@ -38,7 +38,10 @@ void Log::logFunctionStatus(std::source_location loc, bool returned) {
 };
 
 Log::Section::Section(Kind kind, bool monoLine)
-    : kind(kind), monoLine(monoLine), color(getColor(kind)), logLevel(getLogLevel(kind)) {};
+    : kind(kind), monoLine(monoLine), color(getColor(kind)), logLevel(getLogLevel(kind)) {
+    if (monoLine)
+        monoLineCount++;
+};
 
 const std::vector<std::string> &Log::Section::getLogs() const {
     return logs;

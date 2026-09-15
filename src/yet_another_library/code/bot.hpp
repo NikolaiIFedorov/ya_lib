@@ -22,46 +22,34 @@ class Bot {
         bool constant;
     };
 
-    using OutputVector = std::vector<Output>;
-    struct Outputs : public OutputVector {
+    template <typename... MacroArgs> using SubMacroFunction = std::function<float(MacroArgs...)>;
+    template <typename... Args> struct SubMacro : public SubMacroFunction<Args...> {
       public:
-        using OutputVector::OutputVector;
-
-        Outputs(Output output);
-
-        void operator()(float arg) const;
-        float getState() const;
-
-        void addEvent(Controller::Event event, Equation equation) const;
-    };
-
-    template <typename... Args> using MacroFunction = std::function<float(Args...)>;
-    template <typename... Args> struct Macro : public MacroFunction<Args...> { // Add odom
-      public:
-        using MacroFunction<Args...>::MacroFunction;
+        using SubMacroFunction<Args...>::SubMacroFunction;
 
         template <typename Function>
             requires std::is_invocable_r_v<float, Function, Args...>
-        Macro(Function function) : MacroFunction<Args...>(function), enabled(true){};
-        Macro() : MacroFunction<Args...>([](Args...) { return 0.0f; }), enabled(false) {};
+        SubMacro(Function function) : SubMacroFunction<Args...>(function), enabled(true){};
+        SubMacro() : SubMacroFunction<Args...>([](Args...) { return 0.0f; }), enabled(false) {};
 
         bool enabled;
     };
 
+  private:
     template <typename... MacroArgs>
-    using EquationsPair = std::pair<std::map<Controller::Event, Equation>, Macro<MacroArgs...>>;
+    using EquationsPair = std::pair<std::map<Controller::Event, Equation>, SubMacro<MacroArgs...>>;
     template <typename... MacroArgs> struct Equations : public EquationsPair<MacroArgs...> {
       public:
         using EquationsPair<MacroArgs...>::EquationsPair;
 
         Equations(std::map<Controller::Event, Equation> equations)
-            : Equations({equations, Macro<MacroArgs...>()}) {};
+            : Equations({equations, SubMacro<MacroArgs...>()}) {};
         Equations(std::vector<Controller::Event> events) : Equations(convertToMap(events)) {};
         Equations(Controller::Event event) : Equations(std::vector<Controller::Event>{event}) {};
 
-        Equations(std::vector<Controller::Event> events, Macro<MacroArgs...> macro)
+        Equations(std::vector<Controller::Event> events, SubMacro<MacroArgs...> macro)
             : Equations({convertToMap(events), macro}) {};
-        Equations(Macro<MacroArgs...> macro) : Equations({}, macro) {};
+        Equations(SubMacro<MacroArgs...> macro) : Equations({}, macro) {};
 
       private:
         std::map<Controller::Event, Equation> convertToMap(std::vector<Controller::Event> events) {
@@ -73,6 +61,20 @@ class Bot {
                 return equations;
             });
         };
+    };
+
+  public:
+    using OutputVector = std::vector<Output>;
+    struct Outputs : public OutputVector {
+      public:
+        using OutputVector::OutputVector;
+
+        Outputs(Output output);
+
+        void operator()(float arg) const;
+        float getState() const;
+
+        void addEvent(Controller::Event event, Equation equation) const;
     };
 
     template <typename... MacroArgs> using SystemMap = std::map<Outputs, Equations<MacroArgs...>>;
@@ -94,11 +96,13 @@ class Bot {
             });
         };
 
-        void addOutputs(const Outputs &outputs, const Equations<MacroArgs...> &equations) const {
-            TRACE([equations, outputs]() {
+        Outputs addOutputs(const Outputs &outputs, const Equations<MacroArgs...> &equations) const {
+            return TRACE([equations, outputs]() {
                 const auto &eventEquations = equations.first;
                 for (const auto &[event, equation] : eventEquations)
                     outputs.addEvent(event, equation);
+
+                return outputs;
             });
         };
     };

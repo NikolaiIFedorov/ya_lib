@@ -13,6 +13,7 @@ Output::Output(Brain::Port port, Call call, GetState getState)
 Output::Output(Brain::Port port, bool flipped) {
     *this = Motor(port, flipped);
 };
+
 Output::Output(bool defExtended, Brain::Port port, bool flipped) {
     *this = Piston(port, defExtended, flipped);
 };
@@ -35,7 +36,13 @@ Motor::Motor(Brain::Port port, bool flipped) : Output(port, Call(spin), GetState
     });
 }
 
-// Add pid
+// TODO: Add adaptive pid:
+// 1. Impulse
+// 2. Motor acceleration
+// 3. Inertia
+// 4. Acceleration
+// 5. Counter current?
+
 void Motor::spin(Brain::Port port, float pct) {
     motors.at(port).move_voltage(12000 * (flippedOutputs.contains(port) ? -pct : pct));
 };
@@ -45,7 +52,7 @@ float Motor::getVoltage(Brain::Port port) {
 };
 
 Piston::Piston(Brain::Port port, bool defState, bool flipped)
-    : Output(port, Call(extend), GetState(getExtended)) {
+    : Output(port, Call(setExtended), GetState(getExtended)) {
     TRACE([port, flipped, defState]() {
         if (prosPortFromPort.contains(port))
             pistons.insert({port, pros::adi::Pneumatics(prosPortFromPort.at(port), defState)});
@@ -55,7 +62,7 @@ Piston::Piston(Brain::Port port, bool defState, bool flipped)
     });
 }
 
-void Piston::extend(Brain::Port port, float extended) {
+void Piston::setExtended(Brain::Port port, float extended) {
     pistons.at(port).set_value(flippedOutputs.contains(port) ? !bool(extended) : extended);
 };
 
