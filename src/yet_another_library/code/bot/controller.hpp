@@ -63,6 +63,9 @@ class Controller {
 
     static std::map<Event, std::vector<Callback>> callbackFromEvent;
 
+    static std::map<Event, float> lastAxisVal;
+
     static void triggerCallback(Event event);
+    static bool axisValChanged(Event event);
     static void pollInputs();
 };
