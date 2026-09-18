@@ -21,10 +21,12 @@ void Controller::triggerCallback(Event event) {
 void Controller::pollInputs() {
     TRACE([]() {
         for (auto &[event, callbacks] : callbackFromEvent) {
-            if (prosButtonFromEvent.contains(event) &&
-                controller.get_digital(prosButtonFromEvent.at(event))) {
-                for (const auto &callback : callbacks)
-                    callback();
+            if (prosButtonFromEvent.contains(event)) {
+                if (controller.get_digital_new_press(prosButtonFromEvent.at(event)) ||
+                    controller.get_digital_new_release(prosButtonFromEvent.at(event))) {
+                    for (const auto &callback : callbacks)
+                        callback();
+                }
             }
 
             if (prosAnalogFromEvent.contains(event) &&
