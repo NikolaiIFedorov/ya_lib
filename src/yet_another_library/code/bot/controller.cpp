@@ -39,3 +39,12 @@ void Controller::pollInputs() {
 void Controller::addCallback(Event event, Callback callback) {
     callbackFromEvent[event].push_back(std::move(callback));
 };
+
+float Controller::getInput(Event event) {
+    if (prosButtonFromEvent.contains(event))
+        return controller.get_digital(prosButtonFromEvent.at(event));
+    else if (prosAnalogFromEvent.contains(event))
+        return controller.get_analog(prosAnalogFromEvent.at(event));
+
+    return 0;
+}

@@ -12,8 +12,6 @@ class Bot {
     using EquationFunction = std::function<float()>;
     struct Equation : public EquationFunction {
       public:
-        using EquationFunction::EquationFunction;
-
         template <typename Function>
             requires std::is_invocable_r_v<float, Function>
         Equation(Function function) : EquationFunction(function), constant(false){};

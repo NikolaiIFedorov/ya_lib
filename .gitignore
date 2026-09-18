@@ -5,13 +5,11 @@
 # Executables
 *.bin
 *.elf
-tools/autonCompiler
 
 # PROS
 bin/
 .vscode/
 .cache/
-compile_commands.json
 temp.log
 temp.errors
 *.ini
@@ -20,3 +18,6 @@ temp.errors
 .claude
 firmware
 include
+
+# Rust
+target/

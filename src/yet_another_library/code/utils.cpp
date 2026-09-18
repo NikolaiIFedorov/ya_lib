@@ -3,7 +3,10 @@
 
 #include "utils.hpp"
 #include <iostream>
+#include <ostream>
 
+uint8_t Log::Section::monoLineCount;
+std::array<Log::Section, 4> Log::sections;
 uint32_t Log::logCount = 0;
 
 Log::Log(std::array<Section, 4> sections) {
@@ -26,7 +29,8 @@ void Log::log(std::source_location loc, Kind kind, std::string msg) {
     auto *statusLogs = &sections[static_cast<int>(Log::Kind::Status)];
     statusLogs->addLog(msg);
     std::cout << msg << getLabel(logCount++)
-              << getLabel(std::string(loc.file_name()) + ": " + std::string(loc.function_name()));
+              << getLabel(std::string(loc.file_name()) + ": " + std::string(loc.function_name())) +
+                     "\n";
     displayLog(*statusLogs);
 };
 
@@ -77,6 +81,8 @@ pros::Color Log::Section::getColor(Log::Kind kind) {
         return pros::Color::blue;
     case (Kind::Status):
         return pros::Color::light_gray;
+    default:
+        return pros::Color::light_gray;
     };
 };
 
@@ -89,6 +95,8 @@ bool Log::Section::getLogLevel(Log::Kind kind) {
     case (Kind::Trace):
         return true;
     case (Kind::Status):
+        return false;
+    default:
         return false;
     };
 };

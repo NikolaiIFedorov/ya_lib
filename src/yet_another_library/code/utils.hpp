@@ -17,6 +17,7 @@ class Log { // TODO: Make configurable
 
     struct Section {
       public:
+        Section() = default;
         Section(Kind kind, bool monoLine = false);
 
         void addLog(std::string log);

@@ -7,6 +7,7 @@ void initialize() {
          Log::Section{Log::Kind::Warn},
          Log::Section{Log::Kind::Trace, true},
          Log::Section{Log::Kind::Status, true}});
+
     Bot::init();
 }
 

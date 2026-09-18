@@ -4,8 +4,8 @@
 
 void Bot::init() {
     TRACE([]() {
-        const Bot::Outputs left = {{Brain::Port::_1}, {Brain::Port::_3}};
-        const Bot::Outputs right = {{Brain::Port::_9}, {Brain::Port::_10}};
+        const Bot::Outputs left = {{Brain::Port::_1}, {Brain::Port::_11}};
+        const Bot::Outputs right = {{Brain::Port::_10}, {Brain::Port::_20}};
         const System dt = Bot::addSystem(
             {{{left,
                {
@@ -33,7 +33,7 @@ void Bot::init() {
               {claw,
                {
                    {
-                       {Controller::Event::A, !claw.getState()},
+                       {Controller::Event::A, [claw]() { return !claw.getState(); }},
                        {Controller::Event::Left, false},
                        {Controller::Event::Right, true},
                    },

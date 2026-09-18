@@ -1,0 +1,17 @@
+[
+  {
+    "file": "autonCompiler.cpp",
+    "arguments": [
+      "/usr/bin/c++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-I/opt/homebrew/opt/ftxui/include",
+      "autonCompiler.cpp",
+      "-o",
+      "autonCompiler"
+    ],
+    "directory": "/Users/nikolnotai/Documents/vex-vscode-projects/ya_lib/tools",
+    "output": "autonCompiler"
+  }
+]
