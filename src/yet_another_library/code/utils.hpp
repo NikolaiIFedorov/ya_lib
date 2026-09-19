@@ -65,14 +65,19 @@ class Log { // TODO: Make configurable
 
   private:
     static inline const std::string DARK_GRAY = "\033[90m";
+    static inline const std::string ACCENT = "\033[90m";
     static inline const std::string RESET = "\033[0m";
 
     static uint32_t logCount;
+    static uint16_t highestLogLength;
 
+    static std::string trimFunctionName(std::source_location loc);
+    static std::string trimFileName(std::source_location loc);
     static void log(std::source_location loc, Kind kind, std::string msg);
 
     static std::string getLabel(std::string str);
     static std::string getLabel(uint32_t num);
+    static std::string getAccent(std::string str);
     static void logFunctionStatus(std::source_location loc, bool returned);
 
     static std::array<Section, 4> sections;

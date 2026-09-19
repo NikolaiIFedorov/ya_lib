@@ -21,22 +21,22 @@ void Controller::triggerCallback(Event event) {
 };
 
 void Controller::pollInputs() {
-    TRACE([]() {
-        for (auto &[event, callbacks] : callbackFromEvent) {
-            if (prosButtonFromEvent.contains(event)) {
-                if (controller.get_digital_new_press(prosButtonFromEvent.at(event)) ||
-                    controller.get_digital_new_release(prosButtonFromEvent.at(event))) {
-                    for (const auto &callback : callbacks)
-                        callback();
-                }
-            }
-
-            if (prosAnalogFromEvent.contains(event) && axisValChanged(event)) {
+    // TRACE([]() {
+    for (auto &[event, callbacks] : callbackFromEvent) {
+        if (prosButtonFromEvent.contains(event)) {
+            if (controller.get_digital_new_press(prosButtonFromEvent.at(event)) ||
+                controller.get_digital_new_release(prosButtonFromEvent.at(event))) {
                 for (const auto &callback : callbacks)
                     callback();
             }
         }
-    });
+
+        if (prosAnalogFromEvent.contains(event) && axisValChanged(event)) {
+            for (const auto &callback : callbacks)
+                callback();
+        }
+    }
+    // });
 };
 
 void Controller::addCallback(Event event, Callback callback) {
@@ -46,10 +46,10 @@ void Controller::addCallback(Event event, Callback callback) {
 bool Controller::axisValChanged(Event event) {
     float val = controller.get_analog(prosAnalogFromEvent.at(event));
     if (lastAxisVal[event] == val)
-        return true;
+        return false;
 
     lastAxisVal[event] = val;
-    return false;
+    return true;
 };
 
 float Controller::getInput(Event event) {

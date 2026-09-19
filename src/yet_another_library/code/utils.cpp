@@ -3,11 +3,12 @@
 
 #include "utils.hpp"
 #include <iostream>
-#include <ostream>
+#include <source_location>
 
 uint8_t Log::Section::monoLineCount;
 std::array<Log::Section, 4> Log::sections;
-uint32_t Log::logCount = 0;
+uint32_t Log::logCount;
+uint16_t Log::highestLogLength;
 
 Log::Log(std::array<Section, 4> sections) {
     this->sections = sections;
@@ -21,16 +22,37 @@ std::string Log::getLabel(std::string str) {
     return DARK_GRAY + "[" + str + "]" + RESET;
 };
 
+std::string Log::getAccent(std::string str) {
+    return ACCENT + str + RESET;
+};
+
 std::string Log::getLabel(uint32_t num) {
     return getLabel(std::to_string(std::move(num)));
+};
+
+std::string Log::trimFunctionName(std::source_location loc) {
+    std::string functionName = std::string(loc.function_name());
+    return functionName.substr(functionName.find_last_of(' '));
+};
+
+std::string Log::trimFileName(std::source_location loc) {
+    std::string fileName = std::string(loc.file_name());
+    return fileName.substr(fileName.find_last_of('/'));
 };
 
 void Log::log(std::source_location loc, Kind kind, std::string msg) {
     auto *statusLogs = &sections[static_cast<int>(Log::Kind::Status)];
     statusLogs->addLog(msg);
-    std::cout << msg << getLabel(logCount++)
-              << getLabel(std::string(loc.file_name()) + ": " + std::string(loc.function_name())) +
-                     "\n";
+
+    std::string labels =
+        getLabel(logCount++) + getLabel(trimFileName(loc) + ": " + trimFunctionName(loc));
+    uint16_t logLength = labels.length() + msg.length();
+    std::string spacing(
+        logLength > highestLogLength ? highestLogLength = logLength : highestLogLength,
+        ' ');
+
+    std::cout << msg << spacing << labels << "\n";
+
     displayLog(*statusLogs);
 };
 
@@ -101,6 +123,4 @@ bool Log::Section::getLogLevel(Log::Kind kind) {
     };
 };
 
-void Log::displayLog(const Section &section) {
-
-};
+void Log::displayLog(const Section &section) {};

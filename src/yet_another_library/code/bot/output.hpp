@@ -3,6 +3,8 @@
 #include "brain.hpp"
 #include "pros/adi.hpp"
 #include "pros/motors.hpp"
+#include "pros/rtos.h"
+#include "pros/rtos.hpp"
 #include <cstdint>
 #include <functional>
 #include <map>
@@ -57,6 +59,7 @@ class Motor : public Output {
 
     };
     static std::map<Brain::Port, pros::Motor> motors;
+    static pros::MutexVar<std::map<Brain::Port, float>> targetVoltageFromMotor;
 
     static void spin(Brain::Port port, float pct);
     static float getVoltage(Brain::Port port);
