@@ -38,6 +38,27 @@ Motor::Motor(Brain::Port port, bool flipped) : Output(port, Call(spin), GetState
     });
 }
 
+Outputs::Outputs(Output output) : OutputVector({std::move(output)}) {};
+
+void Outputs::operator()(float arg) const {
+    TRACE([arg, this]() {
+        const auto &thisOutputs = *this;
+        for (const auto &output : thisOutputs)
+            output(arg);
+    });
+}
+
+float Outputs::getState() const {
+    return TRACE([this]() {
+        float totalState;
+        const auto &thisOutputs = *this;
+        for (const auto &output : thisOutputs)
+            totalState += output.getState();
+
+        return totalState / thisOutputs.size();
+    });
+};
+
 // TODO: Add adaptive pid:
 // * 1. Impulse
 // 2. Motor acceleration

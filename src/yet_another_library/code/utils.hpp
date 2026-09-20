@@ -56,7 +56,7 @@ class Log { // TODO: Make configurable
 
     static void logFunctionStatus(std::source_location loc, bool returned);
     static void log(std::source_location loc, LogKind kind, std::string msg);
-    static void displayLog(LogKind kind, std::string msg);
+    static void displayLog(LogKind kind, std::string spacing, std::string msg);
 };
 
 struct Section {

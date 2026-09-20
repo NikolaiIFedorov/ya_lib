@@ -37,6 +37,6 @@ class Brain {
         _20
     };
 
-    static void log(size_t line, std::string msg, pros::Color color);
+    static void log(size_t line, std::string spacing, std::string msg, pros::Color color);
     static inline const uint8_t screenCapacity = 12;
 };

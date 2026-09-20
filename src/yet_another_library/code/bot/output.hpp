@@ -3,7 +3,6 @@
 #include "brain.hpp"
 #include "pros/adi.hpp"
 #include "pros/motors.hpp"
-#include "pros/rtos.h"
 #include "pros/rtos.hpp"
 #include <cstdint>
 #include <functional>
@@ -39,6 +38,17 @@ class Output {
     GetState _getState;
 
     static std::unordered_set<Brain::Port> flippedOutputs;
+};
+
+using OutputVector = std::vector<Output>;
+struct Outputs : private OutputVector {
+  public:
+    using OutputVector::OutputVector;
+
+    Outputs(Output output);
+
+    void operator()(float arg) const;
+    float getState() const;
 };
 
 class Motor : public Output {

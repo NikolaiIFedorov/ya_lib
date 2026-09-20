@@ -4,8 +4,11 @@
 
 void Bot::init() {
     TRACE([]() {
-        const auto motor = Motor{Brain::Port::_1};
+        const Outputs motor = Motor{Brain::Port::_1};
+        motor.addEvent(Controller::Event::Rd, -1);
+        motor.addEvent(Controller::Event::Ru, 1);
+
         System system;
-        system.addOutputs({motor}, {{{Controller::Event::Rd, -1}, {Controller::Event::Ru, 1}}, {}});
+        addSystem(system);
     });
 }

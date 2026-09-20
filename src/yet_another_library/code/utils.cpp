@@ -51,11 +51,11 @@ void Log::log(std::source_location loc, LogKind kind, std::string msg) {
     std::string spacing(highestMsgLength - msgLength + 1, ' ');
 
     std::cout << msg << spacing << labels << "\n";
-    displayLog(kind, msg);
+    displayLog(kind, spacing, msg);
 };
 
 void Log::logFunctionStatus(std::source_location loc, bool returned) {
-    log(loc, LogKind::TRACE, returned ? "Function return" : "Function call");
+    log(loc, LogKind::TRACE, returned ? "Function returned" : "Function called");
 };
 
 Section::Section(LogKind kind, bool monoLine)
@@ -139,9 +139,9 @@ uint8_t Sections::addLog(LogKind kind) {
     return start + lines++;
 };
 
-void Log::displayLog(LogKind kind, std::string msg) {
+void Log::displayLog(LogKind kind, std::string spacing, std::string msg) {
     if (!sections.getSection(kind).getLogLevel())
         return;
 
-    Brain::log(sections.addLog(kind), msg, sections.getSection(kind).getColor());
+    Brain::log(sections.addLog(kind), spacing, msg, sections.getSection(kind).getColor());
 };

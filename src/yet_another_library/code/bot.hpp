@@ -62,19 +62,6 @@ class Bot {
     };
 
   public:
-    using OutputVector = std::vector<Output>;
-    struct Outputs : public OutputVector {
-      public:
-        using OutputVector::OutputVector;
-
-        Outputs(Output output);
-
-        void operator()(float arg) const;
-        float getState() const;
-
-        void addEvent(Controller::Event event, Equation equation) const;
-    };
-
     template <typename... MacroArgs> using SystemMap = std::map<Outputs, Equations<MacroArgs...>>;
     template <typename... MacroArgs> class System : public SystemMap<MacroArgs...> {
       public:
@@ -93,16 +80,6 @@ class Bot {
                 };
             });
         };
-
-        Outputs addOutputs(const Outputs &outputs, const Equations<MacroArgs...> &equations) const {
-            return TRACE([equations, outputs]() {
-                const auto &eventEquations = equations.first;
-                for (const auto &[event, equation] : eventEquations)
-                    outputs.addEvent(event, equation);
-
-                return outputs;
-            });
-        };
     };
 
     static void init();
@@ -110,9 +87,18 @@ class Bot {
     template <typename... MacroArgs>
     static System<MacroArgs...> addSystem(System<MacroArgs...> system) {
         return TRACE([system]() {
-            for (const auto &[outputs, equations] : system)
-                system.addOutputs(outputs, equations);
-
+            for (const auto &[outputs, equations] : system) {
+                const auto &eventEquations = equations.first;
+                for (const auto &[event, equation] : eventEquations) {
+                    for (const auto &output : outputs)
+                        Controller::addCallback(event, [output, equation, event]() {
+                            output(
+                                equation.constant ? equation() * Controller::getInput(event)
+                                                  : equation());
+                        });
+                }
+                return outputs;
+            }
             return system;
         });
     };
