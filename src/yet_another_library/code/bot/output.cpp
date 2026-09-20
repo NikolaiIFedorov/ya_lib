@@ -39,21 +39,18 @@ Motor::Motor(Brain::Port port, bool flipped) : Output(port, Call(spin), GetState
 }
 
 // TODO: Add adaptive pid:
-// 1. Impulse
+// * 1. Impulse
 // 2. Motor acceleration
 // 3. Inertia
 // 4. Acceleration
 // 5. Counter current?
 
-void Motor::spin(Brain::Port port, float pct) {
-    static bool taskPid = false;
+void Motor::motorPid() {
+    TRACE([]() {
+        static bool taskPid = false;
+        if (taskPid)
+            return;
 
-    (*targetVoltageFromMotor.lock())[port] = 12000 * (flippedOutputs.contains(port) ? -pct : pct);
-
-    if (taskPid)
-        return;
-
-    pros::Task pid([]() {
         taskPid = true;
 
         std::map<Brain::Port, float> thisTargetVoltageFromMotor = *targetVoltageFromMotor.lock();
@@ -84,6 +81,12 @@ void Motor::spin(Brain::Port port, float pct) {
 
         taskPid = false;
     });
+};
+
+void Motor::spin(Brain::Port port, float pct) {
+    (*targetVoltageFromMotor.lock())[port] = 12000 * (flippedOutputs.contains(port) ? -pct : pct);
+
+    pros::Task pid(motorPid);
 };
 
 float Motor::getVoltage(Brain::Port port) {

@@ -62,6 +62,7 @@ class Motor : public Output {
     static pros::MutexVar<std::map<Brain::Port, float>> targetVoltageFromMotor;
 
     static void spin(Brain::Port port, float pct);
+    static void motorPid();
     static float getVoltage(Brain::Port port);
 };
 

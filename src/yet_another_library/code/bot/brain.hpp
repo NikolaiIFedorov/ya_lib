@@ -1,7 +1,9 @@
 #pragma once
 
-#include <array>
+#include "pros/colors.hpp"
+#include <cstdint>
 #include <string>
+
 class Brain {
   public:
     enum class Port {
@@ -35,9 +37,6 @@ class Brain {
         _20
     };
 
-    void log(size_t line, std::string msg);
-    size_t getLineCapacity();
-
-  private:
-    std::array<std::string, 12> lines;
+    static void log(size_t line, std::string msg, pros::Color color);
+    static inline const uint8_t screenCapacity = 12;
 };

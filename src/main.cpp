@@ -3,10 +3,10 @@
 
 void initialize() {
     Log(
-        {Log::Section{Log::Kind::Error},
-         Log::Section{Log::Kind::Warn},
-         Log::Section{Log::Kind::Trace, true},
-         Log::Section{Log::Kind::Status, true}});
+        {Section{LogKind::ERROR},
+         Section{LogKind::WARN},
+         Section{LogKind::TRACE, true},
+         Section{LogKind::STATUS, true}});
 
     Bot::init();
 }
