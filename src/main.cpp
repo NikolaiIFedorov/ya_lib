@@ -1,26 +1,22 @@
 #include "main.h"
-#include "yet_another_library/code/bot.hpp"
+#include "code/yet_another_library/_ya_lib.hpp"
 
 void initialize() {
-    Log(
-        {Section{LogKind::ERROR},
-         Section{LogKind::WARN},
-         Section{LogKind::TRACE, true},
-         Section{LogKind::STATUS, true}});
+    ya_lib::init();
+};
 
-    Bot::init();
+void disabled() {
+    ya_lib::disabled();
 }
 
-void disabled() {}
-
 void competition_initialize() {
-    Bot::_compInit();
+    ya_lib::compInit();
 }
 
 void autonomous() {
-    Bot::_auton();
+    ya_lib::auton();
 }
 
 void opcontrol() {
-    Bot::_drivercontrol();
+    ya_lib::drivercontrol();
 }
