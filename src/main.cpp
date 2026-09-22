@@ -2,21 +2,21 @@
 #include "code/yet_another_library/_ya_lib.hpp"
 
 void initialize() {
-    ya_lib::init();
+    _ya_lib::init();
 };
 
 void disabled() {
-    ya_lib::disabled();
+    _ya_lib::disabled();
 }
 
 void competition_initialize() {
-    ya_lib::compInit();
+    _ya_lib::compInit();
 }
 
 void autonomous() {
-    ya_lib::auton();
+    _ya_lib::auton();
 }
 
 void opcontrol() {
-    ya_lib::drivercontrol();
+    _ya_lib::drivercontrol();
 }

@@ -33,16 +33,16 @@ class Bot {
 
       private:
         Brain::Port port;
-        static std::map<Brain::Port, pros::Motor> motorFromPort;
-        static std::map<Brain::Port, pros::adi::Pneumatics> pneumaticsFromPort;
+        inline static std::map<Brain::Port, pros::Motor> motorFromPort;
+        inline static std::map<Brain::Port, pros::adi::Pneumatics> pneumaticsFromPort;
 
         PortInstance(std::function<void(Brain::Port, float)> write) : write(write) {};
         std::function<void(Brain::Port, float)> write;
         static void spin(Brain::Port port, float pct) {
-            motorFromPort[port].move_voltage(pct * 12000);
+            motorFromPort.at(port).move_voltage(pct * 12000);
         };
         static void extend(Brain::Port port, bool extended) {
-            pneumaticsFromPort[port].set_value(extended);
+            pneumaticsFromPort.at(port).set_value(extended);
         };
     };
 

@@ -1,10 +1,5 @@
 #include "yet_another_library/bot.hpp"
 
-class Test {
-  public:
-    template <typename type> Test();
-};
-
 void Bot::init() {
     System<> system([system]() {
         PortInstance test(Brain::Port::_1);
