@@ -3,6 +3,13 @@
 #include "components/controller.hpp"
 #include "pros/rtos.hpp"
 
+// TODO: Improve syntax
+// TODO: Add port pattern
+// TODO: Improve code quality
+// TODO: Add logging
+// TODO: Add background stuff
+// TODO: Expand on Device
+
 class _ya_lib {
   public:
     static void init() {

@@ -96,6 +96,27 @@ class Controller {
 
     };
 
+    inline static const std::map<Event, std::function<bool()>> isTimeEvents{
+        {Event::CompInit, []() { return pros::competition::is_connected(); }},
+        {Event::Disabled, []() { return pros::competition::is_disabled(); }},
+        {Event::Auton, []() { return pros::competition::is_autonomous(); }},
+
+    };
+
+  public:
+    static float getEventVal(Event event) {
+        const auto eventKind = getEventKind(event);
+        switch (eventKind) {
+        case EventKind::Button:
+            return controller.get_digital(buttonEvents.at(event));
+        case EventKind::Analog:
+            return controller.get_analog(analogEvents.at(event));
+        case EventKind::Time:
+            return isTimeEvents.at(event)();
+        };
+    };
+
+  private:
     inline static std::map<Event, int8_t> analogVals{
         {Event::Lx, 0},
         {Event::Ly, 0},
@@ -117,6 +138,7 @@ class Controller {
             callbackEvents.erase(event);
     }
     static void executeEvents() {
+
         for (const auto &callbacksEvents : callbackEvents) {
             const auto event = callbacksEvents.first;
             const auto eventKind = getEventKind(event);
@@ -124,8 +146,9 @@ class Controller {
             case EventKind::Button: {
                 const auto button = buttonEvents.at(event);
                 if (controller.get_digital_new_press(button) ||
-                    controller.get_digital_new_release(button))
+                    controller.get_digital_new_release(button)) {
                     executeEvents(event);
+                }
             } break;
             case EventKind::Analog: {
                 auto &val = analogVals[event];

@@ -12,14 +12,14 @@ class Bot {
     class PortInstance {
 
       public:
-        PortInstance(Brain::Port port, bool flipped = false) {
+        PortInstance(Brain::Port port, bool flipped = false) : port(port) {
             if (static_cast<int>(port) <= 20) {
                 motorFromPort.insert({port, pros::Motor(static_cast<int>(port))});
-                *this = PortInstance(spin);
+                write = spin;
             } else {
                 pneumaticsFromPort.insert(
                     {port, pros::adi::Pneumatics(static_cast<char>(port), false)});
-                *this = PortInstance(extend);
+                write = extend;
             }
         };
 
@@ -28,7 +28,7 @@ class Bot {
         };
 
         void addEvent(Controller::Event event, std::function<float(void)> function) {
-            Controller::addEvent(event, [this, function]() { (*this) = function(); });
+            Controller::addEvent(event, [copy = *this, function]() { copy = function(); });
         };
 
       private:
@@ -36,7 +36,6 @@ class Bot {
         inline static std::map<Brain::Port, pros::Motor> motorFromPort;
         inline static std::map<Brain::Port, pros::adi::Pneumatics> pneumaticsFromPort;
 
-        PortInstance(std::function<void(Brain::Port, float)> write) : write(write) {};
         std::function<void(Brain::Port, float)> write;
         static void spin(Brain::Port port, float pct) {
             motorFromPort.at(port).move_voltage(pct * 12000);
@@ -50,39 +49,28 @@ class Bot {
         friend class PortInstance;
 
       public:
-        System(std::function<void()> init) {
-            constructingSystem = this;
-            init();
-            constructingSystem = nullptr;
-        }
+        explicit System(std::function<void(System &init)>) {
+            init(*this);
+        };
 
         void operator()(MacroArgs... macroArgs) {
             for (const auto &subMacro : subMacros)
                 subMacro(macroArgs...);
         };
 
-        static void
-        addSubMacro(PortInstance &portInstance, std::function<float(MacroArgs...)> subMacro) {
-            if (constructingSystem == nullptr)
-                return;
+        void addSubMacro(PortInstance &portInstance, std::function<float(MacroArgs...)> subMacro) {
+            subMacros.push_back([portInstance, subMacro](MacroArgs... macroArgs) {
+                portInstance = subMacro(macroArgs...);
+            });
+        };
 
-            constructingSystem->subMacros.push_back(
-                [portInstance, subMacro](MacroArgs... macroArgs) {
-                    portInstance = subMacro(macroArgs...);
-                });
+        PortInstance addPortInstance(Brain::Port port) {
+            return PortInstance(port);
         };
 
       private:
-        inline static System *constructingSystem = nullptr;
         std::vector<std::function<void(MacroArgs...)>> subMacros;
     };
 
     static void init();
 };
-
-inline Bot::System<float> _system([]() {
-    Bot::PortInstance instance(Brain::Port::_1);
-    instance.addEvent(Controller::Event::Rd, []() { return 1; });
-
-    _system.addSubMacro(instance, [](float input) { return input; });
-});
