@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../utils.hpp"
 #include "pros/misc.h"
 #include "pros/misc.hpp"
 #include <cstdint>
@@ -35,6 +36,14 @@ class Controller {
 
     static void addEvent(Event event, std::function<void()> callback) {
         callbackEvents[event].push_back(callback);
+    };
+
+    static std::vector<std::function<void()>> getAutons() {
+        return callbackEvents.at(Event::Auton);
+    };
+
+    static void setAuton(std::function<void()> auton) {
+        callbackEvents[Event::Auton] = {auton};
     };
 
   private:
@@ -127,40 +136,43 @@ class Controller {
     inline static std::map<Event, std::vector<std::function<void()>>> callbackEvents;
 
     static void executeEvents(Event event) {
-        if (!callbackEvents.contains(event))
-            return;
+        Log::Trace([event] {
+            if (!callbackEvents.contains(event))
+                return;
 
-        const auto &callbacks = callbackEvents[event];
-        for (const auto &callback : callbacks)
-            callback();
+            const auto &callbacks = callbackEvents[event];
+            for (const auto &callback : callbacks)
+                callback();
 
-        if (getEventKind(event) == EventKind::Time)
-            callbackEvents.erase(event);
+            if (getEventKind(event) == EventKind::Time)
+                callbackEvents.erase(event);
+        });
     }
     static void executeEvents() {
-
-        for (const auto &callbacksEvents : callbackEvents) {
-            const auto event = callbacksEvents.first;
-            const auto eventKind = getEventKind(event);
-            switch (eventKind) {
-            case EventKind::Button: {
-                const auto button = buttonEvents.at(event);
-                if (controller.get_digital_new_press(button) ||
-                    controller.get_digital_new_release(button)) {
-                    executeEvents(event);
-                }
-            } break;
-            case EventKind::Analog: {
-                auto &val = analogVals[event];
-                const auto controllerVal = controller.get_analog(analogEvents.at(event));
-                if (val != controllerVal) {
-                    val = controllerVal;
-                    executeEvents(event);
-                }
-            } break;
-            case EventKind::Time:
-                continue;
-            };
-        }
+        Log::Trace([] {
+            for (const auto &callbacksEvents : callbackEvents) {
+                const auto event = callbacksEvents.first;
+                const auto eventKind = getEventKind(event);
+                switch (eventKind) {
+                case EventKind::Button: {
+                    const auto button = buttonEvents.at(event);
+                    if (controller.get_digital_new_press(button) ||
+                        controller.get_digital_new_release(button)) {
+                        executeEvents(event);
+                    }
+                } break;
+                case EventKind::Analog: {
+                    auto &val = analogVals[event];
+                    const auto controllerVal = controller.get_analog(analogEvents.at(event));
+                    if (val != controllerVal) {
+                        val = controllerVal;
+                        executeEvents(event);
+                    }
+                } break;
+                case EventKind::Time:
+                    continue;
+                };
+            }
+        });
     }
 };

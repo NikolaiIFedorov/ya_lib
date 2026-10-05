@@ -30,6 +30,6 @@ class Brain {
         E = 'E',
         F = 'F',
         G = 'G',
-        H = 'H'
+        H = 'H',
     };
 };

@@ -12,7 +12,7 @@
             "-isystem/Users/nikolnotai/Library/Application Support/Code/User/globalStorage/sigbots.pros/install/pros-toolchain-macos/bin/../lib/gcc/arm-none-eabi/14.3.1/include-fixed",
             "-isystem/Users/nikolnotai/Library/Application Support/Code/User/globalStorage/sigbots.pros/install/pros-toolchain-macos/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/include",
             "-iquote./include",
-            "-iquote./include/./",
+            "-iquote./include/code/yet_another_library/",
             "-mcpu=cortex-a9",
             "-mfpu=neon-fp16",
             "-mfloat-abi=hard",
@@ -32,11 +32,11 @@
             "-funwind-tables",
             "--std=gnu++26",
             "-o",
-            "bin/main.cpp.o",
-            "src/main.cpp"
+            "bin/code/yet_another_library/_ya_lib.cpp.o",
+            "src/code/yet_another_library/_ya_lib.cpp"
         ],
         "directory": "/Users/nikolnotai/Documents/vex-vscode-projects/ya_lib",
-        "file": "src/main.cpp"
+        "file": "src/code/yet_another_library/_ya_lib.cpp"
     },
     {
         "arguments": [
@@ -110,10 +110,10 @@
             "-funwind-tables",
             "--std=gnu++26",
             "-o",
-            "bin/code/yet_another_library/components/brain copy.hpp.o",
-            "src/code/yet_another_library/components/brain copy.hpp"
+            "bin/main.cpp.o",
+            "src/main.cpp"
         ],
         "directory": "/Users/nikolnotai/Documents/vex-vscode-projects/ya_lib",
-        "file": "src/code/yet_another_library/components/brain copy.hpp"
+        "file": "src/main.cpp"
     }
 ]
