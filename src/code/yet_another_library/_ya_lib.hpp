@@ -19,8 +19,12 @@
 // TODO: Support Device
 // TODO: Add auton compiler
 
-class _ya_lib {
+class ya_lib {
   public:
+    struct Config {
+        static inline uint8_t tickMs = 10;
+    };
+
     static void init();
 
     static void compInit() {
@@ -37,7 +41,7 @@ class _ya_lib {
             Controller::executeEvents(Controller::Event::DriverControl);
             while (true) {
                 Controller::executeEvents();
-                pros::delay(tick);
+                pros::delay(Config::tickMs);
             };
         });
     };

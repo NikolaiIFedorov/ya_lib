@@ -8,7 +8,7 @@
 #include <map>
 
 class Controller {
-    friend class _ya_lib;
+    friend class ya_lib;
 
   public:
     enum class Event {
