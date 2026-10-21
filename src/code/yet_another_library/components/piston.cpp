@@ -3,24 +3,39 @@
 #include <cstdint>
 #include <sys/types.h>
 
-Piston::Piston(Brain::Port port, std::initializer_list<EventDesc> events)
+ProsPiston::ProsPiston(const Brain::Port &port)
+    : pros::adi::Pneumatics(static_cast<char>(port), false) {};
+
+void ProsPiston::extend(const bool extended) const {
+    set_value(extended);
+}
+bool ProsPiston::getExtended() const {
+    return is_extended();
+}
+
+Piston::Piston(std::vector<Brain::Port> ports, std::initializer_list<EventDesc> events)
     : EventPort(
           events,
-          [port](bool extended) { staticExtend(port, extended); },
-          [port]() { return staticGetExtended(port); }),
-      pistons({pros::adi::Pneumatics(static_cast<char>(port), false)}) {
-    for (const auto &[event, extended] : events)
-        Controller::addEvent(event, [*this, extended]() { extend(extended()); });
-};
+          [this](bool extended) { extend(extended); },
+          [this]() { return getExtended(); }),
+      pistons(std::vector<ProsPiston>(ports.begin(), ports.end())) {};
 
 void Piston::extend(const bool extended) const {
     for (const auto &piston : pistons)
-        piston.set_value(extended);
+        piston.extend(extended);
 }
 bool Piston::getExtended() const {
     int8_t average;
     for (const auto &piston : pistons)
-        average += piston.is_extended() ? 1 : -1;
+        average += piston.getExtended() ? 1 : -1;
 
     return average > 0;
+}
+
+constexpr std::vector<uint8_t> Piston::getAdiPorts(const std::vector<Brain::Port> &ports) {
+    std::vector<char> charPorts;
+    for (const auto &port : ports)
+        charPorts.push_back(static_cast<char>(port));
+
+    return std::vector<uint8_t>(charPorts.begin(), charPorts.end());
 }

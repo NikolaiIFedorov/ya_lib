@@ -16,17 +16,17 @@ class ProsMotor : private pros::Motor {
 
 class Motor : EventPort {
   public:
-    Motor(Brain::Port port, std::initializer_list<EventDesc> events);
+    Motor(std::vector<Brain::Port> ports, std::initializer_list<EventDesc> events);
     ~Motor();
 
-    void spin(const float pct) const;
+    void spin(const float pct);
     float getPct() const;
 
   private:
-    ProsMotor motor;
+    std::vector<ProsMotor> prosMotors;
 
-    const Brain::Port port;
-    inline static std::map<Brain::Port, Motor *> portMotors;
+    const std::vector<Brain::Port> ports;
+    inline static std::vector<Motor *> motors;
 
     float targetPct;
     float integralPct;
@@ -34,7 +34,5 @@ class Motor : EventPort {
     static float mfi(const Motor &motor, float pct, float acceleration);
     static float pid(Motor &motor, float pct);
     static void accelerate(Motor &motor);
-    static void staticSpin(const Brain::Port port, const float pct);
-
-    static float staticGetPct(const Brain::Port port);
+    static void staticSpin(Motor *motor, const float pct);
 };

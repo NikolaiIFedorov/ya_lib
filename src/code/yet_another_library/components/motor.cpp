@@ -19,25 +19,32 @@ float ProsMotor::getPct() const {
     return this->get_actual_velocity() / getGearing();
 };
 
-Motor::Motor(Brain::Port port, std::initializer_list<EventDesc> events)
+Motor::Motor(std::vector<Brain::Port> ports, std::initializer_list<EventDesc> events)
     : EventPort(
           events,
-          [port](float pct) { staticSpin(port, pct); },
-          [port]() { return staticGetPct(port); }),
-      motor(port), port(port) {
-    portMotors[port] = this;
-    for (const auto &[event, pct] : events)
-        Controller::addEvent(event, [port = this->port, pct]() { staticSpin(port, pct()); });
+          [this](float pct) { spin(pct); },
+          [this]() { return getPct(); }),
+      prosMotors(std::vector<ProsMotor>(ports.begin(), ports.end())), ports(ports) {
+    motors.push_back(this);
 };
 Motor::~Motor() {
-    portMotors.erase(port);
+    for (int i = 0; i < motors.size(); i++) {
+        if (motors[i] == this) {
+            motors[i] = nullptr;
+            return;
+        }
+    }
 };
 
-void Motor::spin(const float pct) const {
-    staticSpin(port, pct);
+void Motor::spin(const float pct) {
+    staticSpin(this, pct);
 }
 float Motor::getPct() const {
-    return motor.getPct();
+    float average = 0;
+    for (const auto &motor : prosMotors)
+        average += motor.getPct();
+
+    return average / prosMotors.size();
 }
 
 float ks;
@@ -64,17 +71,14 @@ void Motor::accelerate(Motor &motor) {
     motor.spin(mfi(motor, pct, a * std::abs(pct) / pct / dt) + pid(motor, pct));
 };
 
-void Motor::staticSpin(const Brain::Port port, const float pct) {
-    portMotors[port]->targetPct = pct;
+void Motor::staticSpin(Motor *motor, const float pct) {
+    motor->targetPct = pct;
     static pros::Task mfiPid{[]() {
         while (true) {
-            for (auto &[port, motor] : portMotors)
+            for (auto &motor : motors)
                 accelerate(*motor);
 
             pros::delay(tick);
         }
     }};
 };
-float Motor::staticGetPct(const Brain::Port port) {
-    return portMotors[port]->getPct();
-}

@@ -6,17 +6,23 @@
 #include <initializer_list>
 #include <vector>
 
+class ProsPiston : private pros::adi::Pneumatics {
+  public:
+    ProsPiston(const Brain::Port &port);
+
+    void extend(const bool extended) const;
+    bool getExtended() const;
+};
+
 class Piston : private EventPort {
   public:
-    Piston(Brain::Port port, std::initializer_list<EventDesc> events);
     Piston(std::vector<Brain::Port> port, std::initializer_list<EventDesc> events);
 
     void extend(const bool extended) const;
     bool getExtended() const;
 
   private:
-    std::vector<pros::adi::Pneumatics> pistons;
+    std::vector<ProsPiston> pistons;
 
-    static void staticExtend(const Brain::Port port, const bool extended);
-    static float staticGetExtended(const Brain::Port port);
+    constexpr std::vector<uint8_t> getAdiPorts(const std::vector<Brain::Port> &ports);
 };
