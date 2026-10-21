@@ -2,17 +2,18 @@
 
 #include "components/brain.hpp"
 #include "components/controller.hpp"
+#include "pros/abstract_motor.hpp"
 #include "pros/adi.hpp"
 #include "pros/motors.hpp"
 #include "pros/rtos.hpp"
-#include "utils.hpp"
+#include "utils/utils.hpp"
 #include <functional>
 
 // -TODO: Add pid
 // -TODO: Add BaseOp util
 // -TODO: Add PortInstance groups
 // ?TODO: Add port pattern
-// TODO: Complete PID
+// TODO: Add pid
 // -TODO: Add logging
 // TODO: Add device logging
 // TODO: Support Auton selection
@@ -21,6 +22,7 @@
 // TODO: Improve syntax
 // -TODO: Force System const
 // TODO: Support Device
+// TODO: Add auton compiler
 
 class _ya_lib {
   public:
@@ -64,35 +66,89 @@ class _ya_lib {
         const std::vector<Brain::Port> ports;
 
         inline static std::map<Brain::Port, pros::Motor> motorPorts;
-        static float getPct(Brain::Port port) {
-            return motorPorts.at(port).get_voltage() / 12000.0f;
+
+        static uint16_t getRpm(const pros::Motor &motor) {
+            switch (motor.get_gearing()) {
+            case pros::MotorGears::rpm_100:
+                return 100;
+            case pros::MotorGears::rpm_200:
+                return 200;
+            case pros::MotorGears::rpm_600:
+                return 600;
+            default:
+                return 200;
+            };
+        };
+        static float getPct(const pros::Motor &motor) {
+            return motor.get_actual_velocity() / getRpm(motor);
+        }
+        static float getPct(const Brain::Port port) {
+            return getPct(motorPorts.at(port));
         }
 
-        inline static pros::MutexVar<std::map<Brain::Port, float>> targetPctPorts;
-
         static void movePct(const pros::Motor &motor, float pct) {
-            motor.move_voltage(pct * 12000.0f);
+            motor.move_voltage(pct * 12000);
         };
 
-        inline static const float pctStep = 0.1f;
+        inline static float kp = 1;
+        inline static float ki = 1;
+        static float pid(const pros::Motor &motor, const float targetPct) {
+            static pros::MutexVar<std::map<uint8_t, float>> integralPorts;
+
+            const auto diff = targetPct - getPct(motor);
+            const auto integral = (*integralPorts.lock()).at(motor.get_port()) += diff * dt;
+
+            return kp * diff + ki * integral;
+        };
+
+        inline static float ks = 1;
+        inline static float kv = 1;
+        inline static float ka = 0;
+        static float ff(const pros::Motor &motor, const float targetPct, const float acceleration) {
+            const float pctSign = getSign(targetPct);
+
+            return ks * pctSign + kv * targetPct + ka * acceleration;
+        };
+
+        inline static float ca = 1;
+        // TODO: Take in account for lag
+        static bool accelerate(const Brain::Port port, const float targetPct) {
+            const auto &motor = motorPorts.at(port);
+
+            const auto currentPct = getPct(motor);
+            const auto pctDiff = targetPct - currentPct;
+            if (std::abs(pctDiff) > ca) {
+                const auto signCa = getSign(pctDiff) * ca;
+                const auto pctStep = currentPct + signCa;
+                movePct(motor, pid(motor, pctStep) + ff(motor, pctStep, signCa / dt));
+                return false;
+            } else {
+                movePct(motor, pid(motor, targetPct) + ff(motor, targetPct, pctDiff / dt));
+                return true;
+            }
+        };
+
+        inline static constexpr float tick = 10;
+        inline static constexpr float dt = 10 * 0.001;
         static void spin(Brain::Port port, float pct) {
             Log::Trace([port, pct]() {
-                (*targetPctPorts.lock())[port] = pct;
-                pros::Task pid{[]() {
-                    while (true) {
-                        const auto targetPctPortsCopy = *targetPctPorts.lock();
-                        for (const auto &[port, targetPct] : targetPctPortsCopy) {
-                            const auto currentPct = getPct(port);
-                            const auto pctDiff = targetPct - currentPct;
-                            if (std::abs(pctDiff) < pctStep) {
-                                movePct(motorPorts.at(port), targetPct);
-                            } else {
-                                movePct(
-                                    motorPorts.at(port),
-                                    currentPct + (pctDiff > 0 ? pctStep : -pctStep));
-                            }
-                        }
-                        pros::delay(10);
+                static pros::MutexVar<std::map<Brain::Port, float>> targetPctPorts;
+
+                (*targetPctPorts.lock()).at(port) = pct;
+
+                static bool pidTaskRun = false;
+                if (pidTaskRun)
+                    return;
+
+                pros::Task ffPid{[]() {
+                    pidTaskRun = true;
+                    while (pidTaskRun) {
+                        const auto currentTargetPctPorts = *targetPctPorts.lock();
+                        for (const auto &[port, targetPct] : currentTargetPctPorts) {
+                            if (accelerate(port, targetPct))
+                                (*targetPctPorts.lock()).erase(port);
+                        };
+                        pros::delay(tick);
                     }
                 }};
             });
@@ -153,7 +209,7 @@ class _ya_lib {
             Controller::executeEvents(Controller::Event::DriverControl);
             while (true) {
                 Controller::executeEvents();
-                pros::delay(10);
+                pros::delay(tick);
             };
         });
     };

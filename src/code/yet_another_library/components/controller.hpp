@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../utils.hpp"
+#include "../utils/utils.hpp"
 #include "pros/misc.h"
 #include "pros/misc.hpp"
 #include <cstdint>
@@ -119,7 +119,7 @@ class Controller {
         case EventKind::Button:
             return controller.get_digital(buttonEvents.at(event));
         case EventKind::Analog:
-            return controller.get_analog(analogEvents.at(event));
+            return controller.get_analog(analogEvents.at(event)) / 127.0f;
         case EventKind::Time:
             return isTimeEvents.at(event)();
         };
