@@ -9,7 +9,7 @@
 class Bot {
     using Config = ya_lib::Config &;
     using Port = Brain::Port;
-    using Event = Controller::Event;
+    using Event = Controller::EventId;
 
   public:
     static void init(Config config);

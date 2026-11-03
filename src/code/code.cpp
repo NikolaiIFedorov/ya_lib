@@ -1,4 +1,4 @@
-#include "yet_another_library/bot.hpp"
+#include "bot.hpp"
 
 void Bot::init(Config config) {
     auto dt = addSystem([](auto init) {

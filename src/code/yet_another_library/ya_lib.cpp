@@ -8,17 +8,17 @@ void ya_lib::init() {
 };
 
 void ya_lib::compInit() {
-    Controller::executeEvents(Controller::Event::CompInit);
+    Controller::executeEvents(Controller::EventId::CompInit);
 };
 void ya_lib::disabled() {
-    Controller::executeEvents(Controller::Event::Disabled);
+    Controller::executeEvents(Controller::EventId::Disabled);
 };
 void ya_lib::auton() {
-    Controller::executeEvents(Controller::Event::Auton);
+    Controller::executeEvents(Controller::EventId::Auton);
 };
 void ya_lib::drivercontrol() {
     Log::Trace([]() {
-        Controller::executeEvents(Controller::Event::DriverControl);
+        Controller::executeEvents(Controller::EventId::DriverControl);
         while (true) {
             Controller::executeEvents();
             pros::delay(config.tickMs);

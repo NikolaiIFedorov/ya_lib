@@ -7,7 +7,7 @@ class SystemPort {
   public:
     enum struct Kind { Motor, Piston };
     struct EventDesc {
-        Controller::Event event;
+        Controller::EventId event;
         std::function<float()> execute;
     };
 
