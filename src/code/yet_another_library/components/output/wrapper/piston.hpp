@@ -1,11 +1,12 @@
 #pragma once
 
-#include "brain.hpp"
+#include "abstract/port.hpp"
 #include "pros/adi.hpp"
 
 class ProsPiston : private pros::adi::Pneumatics {
   public:
-    ProsPiston(const Brain::Port &port);
+    using Port = ::PortInstance::Letter;
+    ProsPiston(const ::PortInstance &port);
 
     void extend(const bool extended) const;
     bool getExtended() const;

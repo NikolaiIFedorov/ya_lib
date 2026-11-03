@@ -26,3 +26,7 @@ constexpr Event Event::Rx{Event::Id::Rx};
 constexpr Event Event::Ry{Event::Id::Ry};
 constexpr Event Event::Lx{Event::Id::Lx};
 constexpr Event Event::Ly{Event::Id::Ly};
+constexpr Event Event::CompInit{Event::Id::CompInit};
+constexpr Event Event::Disabled{Event::Id::Disabled};
+constexpr Event Event::Auton{Event::Id::Auton};
+constexpr Event Event::DriverControl{Event::Id::DriverControl};

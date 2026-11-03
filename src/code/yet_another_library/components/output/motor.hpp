@@ -1,17 +1,17 @@
 #pragma once
 
-#include "abstract/eventPort.hpp"
-#include "brain.hpp"
+#include "abstract/port.hpp"
 #include "compensation/compensation.hpp"
 #include "rotational.hpp"
 #include "wrapper/motor.hpp"
 #include <initializer_list>
 #include <optional>
 
-class Motor : public SystemPort {
+class Motor : public PortInstance {
   public:
     using Config = Compensation::Config;
-    Motor(std::vector<Brain::Port> ports, std::initializer_list<EventDesc> events, Config config);
+    using Port = PortInstance::Number;
+    Motor(std::vector<Port> ports, std::initializer_list<EventDesc> events, Config config);
 
     void spin(float pct) const;
     void spin(float pct, float pos) const;
@@ -19,7 +19,7 @@ class Motor : public SystemPort {
 
     Config &getConfig() const;
     void setConfig(Config config);
-    void setRotational(Brain::Port port);
+    void setRotational(Port port);
 
   private:
     std::vector<ProsMotor> prosMotors;

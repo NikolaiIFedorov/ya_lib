@@ -1,6 +1,7 @@
 #pragma once
 
-#include "eventPort.hpp"
+#include "log.hpp"
+#include "port.hpp"
 #include <functional>
 
 template <typename... MacroArgs> struct SubSystem {
@@ -20,12 +21,11 @@ template <typename... MacroArgs> struct SubSystem {
         });
     };
 
-    void addSubMacro(const SystemPort &eventPort, std::function<float(MacroArgs...)> subMacro) {
+    void addSubMacro(const PortInstance &port, std::function<float(MacroArgs...)> subMacro) {
         const auto &subMacros = this->subMacros;
-        Log::Trace([subMacros, eventPort, subMacro] {
-            subMacros.push_back([eventPort, subMacro](MacroArgs... macroArgs) {
-                eventPort.write(subMacro(macroArgs...));
-            });
+        Log::Trace([subMacros, port, subMacro] {
+            subMacros.push_back(
+                [port, subMacro](MacroArgs... macroArgs) { port(subMacro(macroArgs...)); });
         });
     };
 

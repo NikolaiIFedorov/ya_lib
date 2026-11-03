@@ -5,7 +5,7 @@
 #include <optional>
 
 Motor::Motor(std::vector<Brain::Port> ports, std::initializer_list<EventDesc> events, Config config)
-    : SystemPort(
+    : Port(
           events,
           [this](float pct) { spin(pct); },
           [this]() { return getVelocity(); }),

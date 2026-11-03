@@ -1,14 +1,23 @@
 #pragma once
 
-#include "abstract/eventPort.hpp"
-#include "brain.hpp"
+#include "abstract/port.hpp"
 #include "wrapper/piston.hpp"
 #include <initializer_list>
 #include <vector>
 
-class Piston : public SystemPort {
+class Piston : public PortInstance {
   public:
-    Piston(std::vector<Brain::Port> port, std::initializer_list<EventDesc> events);
+    enum struct Port {
+        A = 'A',
+        B = 'B',
+        C = 'C',
+        D = 'D',
+        E = 'E',
+        F = 'F',
+        G = 'G',
+        H = 'H',
+    };
+    Piston(std::vector<Port> port, std::initializer_list<EventDesc> events);
 
     void extend(const bool extended) const;
     bool getExtended() const;
@@ -16,5 +25,5 @@ class Piston : public SystemPort {
   private:
     std::vector<ProsPiston> pistons;
 
-    constexpr std::vector<uint8_t> getAdiPorts(const std::vector<Brain::Port> &ports);
+    constexpr std::vector<uint8_t> getAdiPorts(const std::vector<Port> &ports);
 };

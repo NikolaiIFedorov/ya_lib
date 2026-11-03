@@ -3,7 +3,7 @@
 #include <sys/types.h>
 
 Piston::Piston(std::vector<Brain::Port> ports, std::initializer_list<EventDesc> events)
-    : SystemPort(
+    : Port(
           events,
           [this](bool extended) { extend(extended); },
           [this]() { return getExtended(); }),

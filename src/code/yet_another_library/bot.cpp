@@ -2,14 +2,13 @@
 
 Motor Bot::addMotor(
     std::vector<Brain::Port> ports,
-    std::initializer_list<SystemPort::EventDesc> events,
+    std::initializer_list<Port::EventDesc> events,
     Motor::Config config) {
     return Motor(ports, events, config);
 };
 
-Piston Bot::addPiston(
-    std::vector<Brain::Port> ports,
-    std::initializer_list<SystemPort::EventDesc> events) {
+Piston
+Bot::addPiston(std::vector<Brain::Port> ports, std::initializer_list<Port::EventDesc> events) {
     return Piston(ports, events);
 };
 

@@ -24,11 +24,11 @@ class Bot {
 
     static Motor addMotor(
         std::vector<Brain::Port> ports,
-        std::initializer_list<SystemPort::EventDesc> events,
+        std::initializer_list<Port::EventDesc> events,
         Motor::Config config);
 
     static Piston
-    addPiston(std::vector<Brain::Port> ports, std::initializer_list<SystemPort::EventDesc> events);
+    addPiston(std::vector<Brain::Port> ports, std::initializer_list<Port::EventDesc> events);
 
     static void addEvent(Event event, std::function<void()> callback);
     static float getEventVal(Event event);
