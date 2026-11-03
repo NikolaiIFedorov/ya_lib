@@ -19,6 +19,10 @@ Compensation::Config &Motor::getConfig() const {
     return compensation.config;
 };
 
+void Motor::setConfig(Config config) {
+    compensation.config = config;
+};
+
 void Motor::setRotational(Brain::Port port) {
     rotational.emplace(port);
 };

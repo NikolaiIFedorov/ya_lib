@@ -17,7 +17,8 @@ class Motor : public SystemPort {
     void spin(float pct, float pos) const;
     float getVelocity() const;
 
-    Compensation::Config &getConfig() const;
+    Config &getConfig() const;
+    void setConfig(Config config);
     void setRotational(Brain::Port port);
 
   private:
