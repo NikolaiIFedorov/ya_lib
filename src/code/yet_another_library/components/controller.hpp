@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../utils/utils.hpp"
 #include "pros/misc.h"
 #include "pros/misc.hpp"
+#include "utils.hpp"
 #include <cstdint>
 #include <functional>
 #include <map>
@@ -80,6 +80,8 @@ class Controller {
         case Event::DriverControl:
             return EventKind::Time;
         };
+
+        return EventKind::Time;
     }
 
     inline static const std::map<Event, pros::controller_digital_e_t> buttonEvents{

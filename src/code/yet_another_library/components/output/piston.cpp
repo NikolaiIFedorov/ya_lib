@@ -1,20 +1,9 @@
 #include "piston.hpp"
-#include "pros/adi.hpp"
 #include <cstdint>
 #include <sys/types.h>
 
-ProsPiston::ProsPiston(const Brain::Port &port)
-    : pros::adi::Pneumatics(static_cast<char>(port), false) {};
-
-void ProsPiston::extend(const bool extended) const {
-    set_value(extended);
-}
-bool ProsPiston::getExtended() const {
-    return is_extended();
-}
-
 Piston::Piston(std::vector<Brain::Port> ports, std::initializer_list<EventDesc> events)
-    : EventPort(
+    : SystemPort(
           events,
           [this](bool extended) { extend(extended); },
           [this]() { return getExtended(); }),

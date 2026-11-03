@@ -1,5 +1,5 @@
 #include "main.h"
-#include "code/yet_another_library/_ya_lib.hpp"
+#include "code/yet_another_library/ya_lib.hpp"
 
 void initialize() {
     ya_lib::init();

@@ -3,14 +3,15 @@
 #include "controller.hpp"
 #include <functional>
 
-class EventPort {
+class SystemPort {
   public:
+    enum struct Kind { Motor, Piston };
     struct EventDesc {
         Controller::Event event;
         std::function<float()> execute;
     };
 
-    EventPort(
+    SystemPort(
         std::initializer_list<EventDesc> events,
         std::function<void(float)> write,
         std::function<float()> read);

@@ -1,7 +1,7 @@
 #include "eventPort.hpp"
 #include "controller.hpp"
 
-EventPort::EventPort(
+SystemPort::SystemPort(
     std::initializer_list<EventDesc> events,
     std::function<void(float)> write,
     std::function<float()> read)

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <functional>
 #include <iostream>
 #include <source_location>
 #include <type_traits>
@@ -29,37 +28,6 @@ class Log {
             return functionReturn;
         }
     };
-};
-
-class BaseOp {
-    using Read = std::function<float()>;
-    using Write = std::function<void(float)>;
-
-  public:
-    BaseOp(Read read, Write write) : read(read), write(write) {};
-    BaseOp(std::vector<BaseOp> baseOps)
-        : read([baseOps]() {
-              float total;
-              for (const auto &baseOp : baseOps)
-                  total += baseOp();
-
-              return total / baseOps.size();
-          }),
-          write([baseOps](float input) {
-              for (auto &baseOp : baseOps)
-                  baseOp = input;
-          }) {};
-
-    float operator()() const {
-        return read();
-    };
-    void operator=(float input) const {
-        write(input);
-    };
-
-  private:
-    Read read;
-    Write write;
 };
 
 inline float getSign(float num) {

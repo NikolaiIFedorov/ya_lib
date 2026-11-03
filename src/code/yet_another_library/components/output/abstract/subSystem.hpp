@@ -3,12 +3,12 @@
 #include "eventPort.hpp"
 #include <functional>
 
-template <typename... MacroArgs> struct System {
+template <typename... MacroArgs> struct SubSystem {
     friend class PortInstance;
 
   public:
-    using Init = std::function<void(System &)>;
-    explicit System(Init init) {
+    using Init = std::function<void(SubSystem &)>;
+    explicit SubSystem(Init init) {
         init(*this);
     };
 
@@ -20,7 +20,7 @@ template <typename... MacroArgs> struct System {
         });
     };
 
-    void addSubMacro(const EventPort &eventPort, std::function<float(MacroArgs...)> subMacro) {
+    void addSubMacro(const SystemPort &eventPort, std::function<float(MacroArgs...)> subMacro) {
         const auto &subMacros = this->subMacros;
         Log::Trace([subMacros, eventPort, subMacro] {
             subMacros.push_back([eventPort, subMacro](MacroArgs... macroArgs) {
