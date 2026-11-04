@@ -1,22 +1,13 @@
 #pragma once
 
-#include "abstract/port.hpp"
+#include "abstract/portDesc.hpp"
 #include "wrapper/piston.hpp"
 #include <initializer_list>
 #include <vector>
 
-class Piston : public PortInstance {
+class Piston : public PortDesc {
   public:
-    enum struct Port {
-        A = 'A',
-        B = 'B',
-        C = 'C',
-        D = 'D',
-        E = 'E',
-        F = 'F',
-        G = 'G',
-        H = 'H',
-    };
+    using Port = PortDesc::Letter;
     Piston(std::vector<Port> port, std::initializer_list<EventDesc> events);
 
     void extend(const bool extended) const;

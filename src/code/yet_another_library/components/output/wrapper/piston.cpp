@@ -1,7 +1,6 @@
 #include "piston.hpp"
 
-ProsPiston::ProsPiston(const Brain::Port &port)
-    : pros::adi::Pneumatics(static_cast<char>(port), false) {};
+ProsPiston::ProsPiston(const Port &port) : pros::adi::Pneumatics(static_cast<char>(port), false) {};
 
 void ProsPiston::extend(const bool extended) const {
     set_value(extended);

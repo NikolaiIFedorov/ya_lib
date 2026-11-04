@@ -8,8 +8,6 @@ void Event::operator()(std::function<void()> callback) const {
     Controller::addEvent(id, callback);
 }
 
-constexpr Event::Event(Id id) : id(id) {}
-
 constexpr Event Event::Left{Event::Id::Left};
 constexpr Event Event::Right{Event::Id::Right};
 constexpr Event Event::Up{Event::Id::Up};

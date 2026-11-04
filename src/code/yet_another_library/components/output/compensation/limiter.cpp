@@ -1,9 +1,12 @@
 #include "limiter.hpp"
-#include "../../../utils/log.hpp"
+#include "math.hpp"
+#include <algorithm>
 #include <cmath>
 
+Limiter::Limiter(Config config) : config(config) {};
+
 float Limiter::accelerate(float targetVelocity, float currentVelocity) const {
-    rampTicks += getSign(targetVelocity - currentVelocity);
+    rampTicks += Math::getSign(targetVelocity - currentVelocity);
     const float center = currentVelocity / config.tickRamp;
     rampTicks = std::clamp(rampTicks, center - 2, center + 2);
 

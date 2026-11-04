@@ -1,16 +1,16 @@
 #pragma once
 
-#include "abstract/port.hpp"
+#include "abstract/portDesc.hpp"
 #include "compensation/compensation.hpp"
 #include "rotational.hpp"
 #include "wrapper/motor.hpp"
 #include <initializer_list>
 #include <optional>
 
-class Motor : public PortInstance {
+class Motor : public PortDesc {
   public:
     using Config = Compensation::Config;
-    using Port = PortInstance::Number;
+    using Port = PortDesc::Number;
     Motor(std::vector<Port> ports, std::initializer_list<EventDesc> events, Config config);
 
     void spin(float pct) const;
@@ -26,7 +26,7 @@ class Motor : public PortInstance {
     inline static std::vector<Motor *> motors;
 
     Compensation compensation;
-    std::optional<Rotational> rotational;
+    std::optional<Rotational> rotational = std::nullopt;
 
     static void setVoltage(const Motor &motor, float pct);
     static void

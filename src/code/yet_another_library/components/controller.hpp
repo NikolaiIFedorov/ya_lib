@@ -24,7 +24,7 @@ class Controller {
         Analog,
         Time,
     };
-    static EventKind getEventKind(Event::Id event);
+    static EventKind getEventKind(Event event);
 
     inline static const std::map<Event::Id, pros::controller_digital_e_t> buttonEvents{
         {Event::Id::Left, pros::controller_digital_e_t::E_CONTROLLER_DIGITAL_LEFT},
@@ -57,7 +57,7 @@ class Controller {
     };
 
   public:
-    static float getEventVal(Event::Id event);
+    static float getEventVal(Event event);
 
   private:
     inline static std::map<Event::Id, int8_t> analogVals{
@@ -69,6 +69,6 @@ class Controller {
 
     inline static std::map<Event::Id, std::vector<std::function<void()>>> callbackEvents;
 
-    static void executeEvents(Event::Id event);
+    static void executeEvents(Event event);
     static void executeEvents();
 };

@@ -1,11 +1,12 @@
 #pragma once
 
-#include "brain.hpp"
+#include "abstract/portDesc.hpp"
 #include "pros/imu.hpp"
 
 class Inertial {
   public:
-    Inertial(Brain::Port port);
+    using Port = PortDesc::Letter;
+    Inertial(Port port);
 
     float getRotation();
 

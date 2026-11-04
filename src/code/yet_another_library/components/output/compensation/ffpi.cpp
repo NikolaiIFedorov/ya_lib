@@ -2,8 +2,9 @@
 #include "math.hpp"
 #include <algorithm>
 
-float ffPi::getOffset(float motorPosition, float targetVelocity, float targetAcceleration) const {
+ffPi::ffPi(Config config) : config(config) {};
 
+float ffPi::getOffset(float motorPosition, float targetVelocity, float targetAcceleration) const {
     const float proportion = targetVelocity - motorPosition;
 
     if (integralOverflow == 0 || Math::getSign(proportion) != integralOverflow)

@@ -4,8 +4,8 @@
 #include "ya_lib.hpp"
 #include <optional>
 
-Motor::Motor(std::vector<Brain::Port> ports, std::initializer_list<EventDesc> events, Config config)
-    : Port(
+Motor::Motor(std::vector<Port> ports, std::initializer_list<EventDesc> events, Config config)
+    : PortDesc(
           events,
           [this](float pct) { spin(pct); },
           [this]() { return getVelocity(); }),
@@ -23,7 +23,7 @@ void Motor::setConfig(Config config) {
     compensation.config = config;
 };
 
-void Motor::setRotational(Brain::Port port) {
+void Motor::setRotational(Port port) {
     rotational.emplace(port);
 };
 

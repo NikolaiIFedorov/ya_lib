@@ -37,5 +37,5 @@ class Event {
     };
     Id id;
 
-    constexpr Event(Id eventId);
+    constexpr Event(Id eventId) : id(eventId) {};
 };

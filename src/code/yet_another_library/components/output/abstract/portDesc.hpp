@@ -3,7 +3,7 @@
 #include "event.hpp"
 #include <functional>
 
-class PortInstance {
+class PortDesc {
   public:
     enum struct Number {
         _1 = 1,
@@ -37,19 +37,21 @@ class PortInstance {
         G = 'G',
         H = 'H',
     };
-    enum struct Kind { Motor, Piston };
     struct EventDesc {
+        EventDesc(const Event &event, std::function<float()> callback);
+        EventDesc(const Event &event, std::function<float(float)> callback);
+
         const Event &event;
-        std::function<float()> callback;
+        std::function<float(float state)> callback;
     };
 
-    PortInstance(
+    PortDesc(
         std::initializer_list<EventDesc> events,
         std::function<void(float)> write,
         std::function<float()> read);
 
-    float operator()();
-    void operator()(float arg);
+    float operator()() const;
+    void operator()(float arg) const;
 
   private:
     std::function<void(float)> write;

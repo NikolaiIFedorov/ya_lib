@@ -1,6 +1,8 @@
 #include "pid.hpp"
 #include <optional>
 
+Pid::Pid(Config config) : config(config) {};
+
 float Pid::getOffset(float motorPosition) const {
     const float proportion = targetPosition.value() - motorPosition;
     const float derivative = (proportion - prevProportion) / dt;

@@ -1,6 +1,6 @@
 #include "motor.hpp"
 
-ProsMotor::ProsMotor(Brain::Port port) : pros::Motor(static_cast<uint8_t>(port)) {}
+ProsMotor::ProsMotor(Port port) : pros::Motor(static_cast<uint8_t>(port)) {}
 constexpr uint16_t ProsMotor::getGearing() const {
     switch (this->get_gearing()) {
     case pros::MotorGears::rpm_100:

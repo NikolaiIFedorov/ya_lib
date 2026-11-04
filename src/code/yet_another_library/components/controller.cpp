@@ -12,8 +12,9 @@ std::vector<std::function<void()>> Controller::getAutons() {
 void Controller::setAuton(std::function<void()> auton) {
     callbackEvents[Event::Id::Auton] = {auton};
 };
-Controller::EventKind Controller::getEventKind(Event::Id event) {
-    switch (event) {
+Controller::EventKind Controller::getEventKind(Event event) {
+    const auto id = event.id;
+    switch (id) {
     case Event::Id::Left:
     case Event::Id::Right:
     case Event::Id::Up:
@@ -41,29 +42,31 @@ Controller::EventKind Controller::getEventKind(Event::Id event) {
 
     return EventKind::Time;
 }
-float Controller::getEventVal(Event::Id event) {
+float Controller::getEventVal(Event event) {
+    const auto id = event.id;
     const auto eventKind = getEventKind(event);
     switch (eventKind) {
     case EventKind::Button:
-        return controller.get_digital(buttonEvents.at(event));
+        return controller.get_digital(buttonEvents.at(id));
     case EventKind::Analog:
-        return controller.get_analog(analogEvents.at(event)) / 127.0f;
+        return controller.get_analog(analogEvents.at(id)) / 127.0f;
     case EventKind::Time:
-        return isTimeEvents.at(event)();
+        return isTimeEvents.at(id)();
     };
 };
 
-void Controller::executeEvents(Event::Id event) {
+void Controller::executeEvents(Event event) {
     Log::Trace([event] {
-        if (!callbackEvents.contains(event))
+        const auto id = event.id;
+        if (!callbackEvents.contains(id))
             return;
 
-        const auto &callbacks = callbackEvents[event];
+        const auto &callbacks = callbackEvents[id];
         for (const auto &callback : callbacks)
             callback();
 
-        if (getEventKind(event) == EventKind::Time)
-            callbackEvents.erase(event);
+        if (getEventKind(id) == EventKind::Time)
+            callbackEvents.erase(id);
     });
 }
 void Controller::executeEvents() {

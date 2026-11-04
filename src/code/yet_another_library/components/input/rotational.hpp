@@ -1,11 +1,11 @@
 #pragma once
 
-#include "abstract/port.hpp"
+#include "../output/abstract/portDesc.hpp"
 #include "pros/rotation.hpp"
 
 class Rotational {
   public:
-    using Port = PortInstance::Number;
+    using Port = PortDesc::Number;
     Rotational(Port port);
 
     float getAngle(bool continous = true) const;

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "abstract/port.hpp"
+#include "abstract/portDesc.hpp"
 #include "pros/motors.hpp"
 
 class ProsMotor : private pros::Motor {
   public:
-    using Port = PortInstance::Number;
+    using Port = PortDesc::Number;
     ProsMotor(Port port);
     float getVelocity() const;
     void setVoltage(float pct) const;

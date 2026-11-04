@@ -2,7 +2,7 @@
 #include <cmath>
 #include <cstdlib>
 
-Rotational::Rotational(Brain::Port port) : rotational(static_cast<uint8_t>(port)) {};
+Rotational::Rotational(Port port) : rotational(static_cast<uint8_t>(port)) {};
 
 float Rotational::getAngle(bool continous) const {
     float rotations = rotational.get_position() / 36000.f;

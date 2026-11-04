@@ -1,11 +1,11 @@
 #pragma once
 
 #include "log.hpp"
-#include "port.hpp"
+#include "portDesc.hpp"
 #include <functional>
 
 template <typename... MacroArgs> struct SubSystem {
-    friend class PortInstance;
+    friend class PortDesc;
 
   public:
     using Init = std::function<void(SubSystem &)>;
@@ -21,9 +21,8 @@ template <typename... MacroArgs> struct SubSystem {
         });
     };
 
-    void addSubMacro(const PortInstance &port, std::function<float(MacroArgs...)> subMacro) {
-        const auto &subMacros = this->subMacros;
-        Log::Trace([subMacros, port, subMacro] {
+    void addSubMacro(const PortDesc &port, std::function<float(MacroArgs...)> subMacro) {
+        Log::Trace([this, port, subMacro] {
             subMacros.push_back(
                 [port, subMacro](MacroArgs... macroArgs) { port(subMacro(macroArgs...)); });
         });

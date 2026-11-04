@@ -2,8 +2,8 @@
 #include <cstdint>
 #include <sys/types.h>
 
-Piston::Piston(std::vector<Brain::Port> ports, std::initializer_list<EventDesc> events)
-    : Port(
+Piston::Piston(std::vector<Port> ports, std::initializer_list<EventDesc> events)
+    : PortDesc(
           events,
           [this](bool extended) { extend(extended); },
           [this]() { return getExtended(); }),
@@ -21,7 +21,7 @@ bool Piston::getExtended() const {
     return average > 0;
 }
 
-constexpr std::vector<uint8_t> Piston::getAdiPorts(const std::vector<Brain::Port> &ports) {
+constexpr std::vector<uint8_t> Piston::getAdiPorts(const std::vector<Port> &ports) {
     std::vector<char> charPorts;
     for (const auto &port : ports)
         charPorts.push_back(static_cast<char>(port));
