@@ -11,7 +11,10 @@ class Motor : public PortDesc {
   public:
     using Config = Compensation::Config;
     using Port = PortDesc::Number;
-    Motor(std::vector<Port> ports, std::initializer_list<EventDesc> events, Config config);
+    Motor(
+        std::vector<Flippable<Port>> ports,
+        std::initializer_list<EventDesc> events,
+        Config config);
 
     void spin(float pct) const;
     void spin(float pct, float pos) const;

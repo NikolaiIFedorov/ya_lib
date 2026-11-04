@@ -4,6 +4,11 @@
 #include <functional>
 
 class PortDesc {
+    friend class Motor;
+    friend class Piston;
+    friend class Inertial;
+    friend class Rotational;
+
   public:
     enum struct Number {
         _1 = 1,
@@ -45,15 +50,30 @@ class PortDesc {
         std::function<float(float state)> callback;
     };
 
+    float operator()() const;
+    void operator()(float arg) const;
+
+  private:
     PortDesc(
         std::initializer_list<EventDesc> events,
         std::function<void(float)> write,
         std::function<float()> read);
 
-    float operator()() const;
-    void operator()(float arg) const;
-
-  private:
     std::function<void(float)> write;
     std::function<float()> read;
 };
+
+template <class Port> struct Flippable {
+  public:
+    constexpr Flippable(Port port, bool flipped = false) : port(port), flipped(flipped) {};
+    Port port;
+    bool flipped;
+};
+
+constexpr Flippable<PortDesc::Number> operator-(PortDesc::Number number) {
+    return {number, true};
+}
+
+constexpr Flippable<PortDesc::Letter> operator-(PortDesc::Letter letter) {
+    return {letter, true};
+}

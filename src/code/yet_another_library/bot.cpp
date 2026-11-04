@@ -2,14 +2,15 @@
 #include "abstract/portDesc.hpp"
 
 Motor Bot::addMotor(
-    std::vector<PortNumber> ports,
+    std::vector<Flippable<PortNumber>> ports,
     std::initializer_list<PortDesc::EventDesc> events,
     Motor::Config config) {
     return Motor(ports, events, config);
 };
 
-Piston
-Bot::addPiston(std::vector<PortLetter> ports, std::initializer_list<PortDesc::EventDesc> events) {
+Piston Bot::addPiston(
+    std::vector<Flippable<PortLetter>> ports,
+    std::initializer_list<PortDesc::EventDesc> events) {
     return Piston(ports, events);
 };
 

@@ -21,12 +21,13 @@ class Bot {
     };
 
     static Motor addMotor(
-        std::vector<PortNumber> ports,
+        std::vector<Flippable<PortNumber>> ports,
         std::initializer_list<PortDesc::EventDesc> events,
         Motor::Config config);
 
-    static Piston
-    addPiston(std::vector<PortLetter> ports, std::initializer_list<PortDesc::EventDesc> events);
+    static Piston addPiston(
+        std::vector<Flippable<PortLetter>> ports,
+        std::initializer_list<PortDesc::EventDesc> events);
 
     static void addEvent(Event event, std::function<void()> callback);
     static float getEventVal(Event event);

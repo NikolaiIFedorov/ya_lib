@@ -3,10 +3,18 @@
 
 #include <cstdint>
 
-// TODO: Add Odom
-// TODO: Add device logging
-// TODO: Support Auton selection
-// TODO: Add auton compiler
+// HEADER: Logging
+// Add: device logging
+
+// HEADER: Event
+// Support: positional output
+
+// HEADER: Dt
+// Support: Odom
+
+// HEADER: Auton
+// Support: auton selection
+// Add: auton compiler
 
 class ya_lib {
   public:

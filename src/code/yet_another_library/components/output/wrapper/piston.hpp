@@ -5,9 +5,12 @@
 
 class ProsPiston : private pros::adi::Pneumatics {
   public:
-    using Port = PortDesc::Letter;
+    using Port = Flippable<PortDesc::Letter>;
     ProsPiston(const Port &port);
 
     void extend(const bool extended) const;
     bool getExtended() const;
+
+  private:
+    const bool flipped;
 };

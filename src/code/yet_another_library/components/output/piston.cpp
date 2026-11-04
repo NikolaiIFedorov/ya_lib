@@ -16,7 +16,7 @@ void Piston::extend(const bool extended) const {
 bool Piston::getExtended() const {
     int8_t average;
     for (const auto &piston : pistons)
-        average += piston.getExtended() ? 1 : -1;
+        average += (piston.getExtended() ? 1 : -1);
 
     return average > 0;
 }
@@ -24,7 +24,7 @@ bool Piston::getExtended() const {
 constexpr std::vector<uint8_t> Piston::getAdiPorts(const std::vector<Port> &ports) {
     std::vector<char> charPorts;
     for (const auto &port : ports)
-        charPorts.push_back(static_cast<char>(port));
+        charPorts.push_back(static_cast<char>(port.port));
 
     return std::vector<uint8_t>(charPorts.begin(), charPorts.end());
 }

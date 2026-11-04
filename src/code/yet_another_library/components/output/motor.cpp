@@ -4,7 +4,10 @@
 #include "ya_lib.hpp"
 #include <optional>
 
-Motor::Motor(std::vector<Port> ports, std::initializer_list<EventDesc> events, Config config)
+Motor::Motor(
+    std::vector<Flippable<Port>> ports,
+    std::initializer_list<EventDesc> events,
+    Config config)
     : PortDesc(
           events,
           [this](float pct) { spin(pct); },

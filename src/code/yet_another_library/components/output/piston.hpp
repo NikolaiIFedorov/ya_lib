@@ -7,7 +7,7 @@
 
 class Piston : public PortDesc {
   public:
-    using Port = PortDesc::Letter;
+    using Port = Flippable<PortDesc::Letter>;
     Piston(std::vector<Port> port, std::initializer_list<EventDesc> events);
 
     void extend(const bool extended) const;
